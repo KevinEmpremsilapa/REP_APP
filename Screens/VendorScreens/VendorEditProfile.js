@@ -1,4 +1,4 @@
-//User Edit Profile Screen
+//User Vendor edit Profile Screen
 import React, { Component } from "react";
 import * as firebase from "firebase";
 import GradientButton from 'react-native-gradient-buttons';
@@ -27,7 +27,7 @@ import {
   Label
 } from "native-base";
 
-export default class UserEditProfile extends Component {
+export default class VendorEditProfile extends Component {
 
   static navigationOptions = {
     title: "Edit Profile"
@@ -139,7 +139,7 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-               this.props.navigation.navigate("HomeScreen")
+               this.props.navigation.navigate("HomeScreenVendor")
             }
           />
           

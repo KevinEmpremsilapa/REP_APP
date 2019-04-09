@@ -41,6 +41,7 @@ export default class Signup extends Component {
     super(props);
     this.state = {
       name: "",
+      company: "",
       phone: "",
       email: "",
       password: "",
@@ -50,7 +51,7 @@ export default class Signup extends Component {
     };
   }
 
-  signUpUser = (email, password, name, phone) => {
+  signUpUser = (email, password, name, phone, company) => {
     try {
       if (this.state.password.length < 6) {
         alert("Enter a password that is 6 characters or longer");
@@ -81,12 +82,26 @@ export default class Signup extends Component {
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
           <View style={styles.form}>
+
+          <Text style={styles.bigBoldWhiteFont}>
+            VENDOR SIGNUP
+          </Text>
+
           <Item 
             rounded
             style={styles.formInput}>
             <Input 
               placeholder = "Full Name"
               onChangeText={name => this.setState({ name })} />
+          </Item>
+
+          
+          <Item 
+            rounded
+            style={styles.formInput}>
+            <Input 
+              placeholder = "Company Name"
+              onChangeText={name => this.setState({ company })} />
           </Item>
 
           <Item 
@@ -140,7 +155,8 @@ export default class Signup extends Component {
               this.state.email,
               this.state.password,
               this.state.name,
-              this.state.phone
+              this.state.phone,
+              this.state.company
             )}
             />
           </View>

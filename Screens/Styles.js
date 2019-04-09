@@ -1,5 +1,11 @@
 import {StyleSheet, Dimensions} from 'react-native';
 
+const Colors = {
+  lightGrey: '#c9c9c9',
+  midGrey: '#5d5d5d',
+  darkGrey: '#363636',
+}
+
 export default StyleSheet.create({
   safeAreaStyle:{height:100,backgroundColor: 'white', alignItems:'center', justifyContent: 'center'},
   menuImage:{height:60, width:60, borderRadius:60},
@@ -107,6 +113,7 @@ export default StyleSheet.create({
     marginBottom: 20
   },
 
+
   // Style Form
   formInput:{
     marginTop: 10, 
@@ -121,6 +128,15 @@ export default StyleSheet.create({
     padding: 5, 
     textAlign: "center",
     fontWeight: 'bold'
+  },
+  searchBarContainer:{
+    backgroundColor: '#FFF',
+  },
+  bigBoldWhiteFont:{
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: '#FFF'
   },
 
   // Buttons
@@ -143,7 +159,61 @@ export default StyleSheet.create({
     resizeMode: 'contain',
     height: '100%',
     width: '100%',
-  }
+  },
+  
+  // Vendor 
+  vendorThumbnail:{
+    height: 50,
+    width: 50,
+  },
+  vendorName:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.darkGrey,
+  },
+  vendorLocationButtonAlign:{
+   position: 'absolute',
+   justifyContent: 'center', 
+   alignItems: 'center',
+   alignSelf: 'center',
+   //alignSelf: 'center',
+   bottom: 20,
+  },
+  vendorMapContainer:{
+    flex:1,
+  },
+  vendorHeaderStyle:{
+    backgroundColor: 'rgba(255,109,111, .8)',
+    position: 'absolute',
+    top: 0,
+  },
+
+  // Map 
+  mapSize:{
+    flex: 1,
+  },
+  compassPosition:{
+    position: 'absolute',
+    alignSelf: 'center',
+    top: 10,
+  },
+  hamburgerIconPosition:{
+    position: 'absolute',
+    paddingRight: 20,
+    top: 60,
+    right:0,
+    paddingBottom: 10,
+  },
+  mapIconStyle:{
+    height: 50,
+    width: 50,
+  },
+  locationIconPosition:{
+    position: 'absolute',
+    paddingRight: 20,
+    top: 120,
+    right:0,
+  },
 })
 
 /*
@@ -151,7 +221,7 @@ Colors:
  // Original Image Colors (Currently in use)
   #FBBC82
   #FB8B74   
-  #FF6D6F  
+  #FF6D6F rgba(255,109,111, .8)
   #8F425F
   #87456F
   #4C2250
@@ -165,4 +235,8 @@ Colors:
   #C06C84
   #6C5B7B
   #355C7D
+  // Font Colors
+  #363636
+  // Grey
+  #C7C7C7 rgba(199,199,199, .8)
  */

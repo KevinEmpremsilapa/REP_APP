@@ -93,6 +93,7 @@ export default class App extends React.Component {
         
           //check if user was found
           if (this.state.name != "null" && this.state.name != null) {
+            isVendor = false;//starts using vendor ham menu
             this.props.navigation.navigate("HomeScreen");
             this.setState({ error: "", loading: false });
           } else {
@@ -131,6 +132,7 @@ export default class App extends React.Component {
           });
 
           if (this.state.name != "null" && this.state.name != null) {
+            isVendor = true; //starts using vendor ham menu
             this.props.navigation.navigate("HomeScreenVendor");
             this.setState({ error: "", loading: false });
           } else {
@@ -182,8 +184,10 @@ export default class App extends React.Component {
                     style = { styles.btnImage } />
                 </TouchableOpacity>
               </Item>
+              
+              <View style = {styles.buttonContainer}>
               <GradientButton
-                style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
+                style={{ marginVertical: 8, marginTop: 15}}
                 text="User Login"
                 textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
                 gradientBegin="#FFF"
@@ -196,7 +200,7 @@ export default class App extends React.Component {
                 onPressAction={() => this.loginUser(this.state.email, this.state.password)}
               />
               <GradientButton
-                style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
+                style={{ marginVertical: 8, marginTop: 15}}
                 text="Vendor Login"
                 textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
                 gradientBegin="#FFF"
@@ -208,6 +212,8 @@ export default class App extends React.Component {
                 success
                 onPressAction={() => this.loginVendor(this.state.email, this.state.password)}
               />
+              </View>
+
             </Form>
           </View>
 

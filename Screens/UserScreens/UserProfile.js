@@ -27,7 +27,7 @@ import {
   Label
 } from "native-base";
 
-export default class UserEditProfile extends Component {
+export default class UserProfile extends Component {
 
   static navigationOptions = {
     title: "Edit Profile"
@@ -41,16 +41,6 @@ export default class UserEditProfile extends Component {
       email: "",
     };
   }
-
-  //Not Working
-  getUserInfo = () => {
-      //get values from firebase database
-      let db = firebase.database();
-
-      //this.state.name = db.ref(`/users/${currentUser.uid}/name`);
-      this.state.name = "Kevin";
-  }  
-  
 
   editUser = (email, name, phone) => {
      try {
@@ -76,14 +66,12 @@ export default class UserEditProfile extends Component {
 
   render() {
     return (
-      //this.getUserInfo();
-
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
         <View style={styles.formEdit}>
 
           <Text style={styles.bigBoldWhiteFont}>
-            EDIT PROFILE
+            MY PROFILE
           </Text>
 
           <Item 
@@ -112,7 +100,7 @@ export default class UserEditProfile extends Component {
 
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
-            text="Save Changes"
+            text="Edit"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -121,28 +109,9 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-              this.editUser(
-              this.state.email,
-              this.state.name,
-              this.state.phone
-            )}
-          />
-
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'left' }}
-            text="Cancel"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={150}
-            radius={50}             
-            onPressAction={() =>
-               this.props.navigation.navigate("HomeScreen")
+                this.props.navigation.navigate("UserEditProfile")
             }
           />
-          
           </View>
           
         </Form>

@@ -14,9 +14,16 @@ import HomeScreenVendor from './Screens/VendorScreens/HomeScreenVendor';
 import UserEditProfile from './Screens/UserScreens/UserEditProfile';
 import styles from "./Screens/Styles";
 import VendorUser from './Screens/VendorUser';
+import UserProfile from './Screens/UserScreens/UserProfile';
+import VendorEditProfile from './Screens/VendorScreens/VendorEditProfile';
+import VendorProfile from './Screens/VendorScreens/VendorProfile';
+
+var isVendor;
+//const drawerRoutes;
 
 
 export default class App extends React.Component{
+
     render(){
         return(
             <RootNavigator/> 
@@ -45,10 +52,14 @@ const Stack = {
     SignupVendor: {screen: SignupVendor},
     HomeScreenVendor: {screen: HomeScreenVendor},
     UserEditProfile: {screen: UserEditProfile},
-    VendorUser: {screen: VendorUser}
+    VendorUser: {screen: VendorUser},
+    UserProfile: {screen: UserProfile},
+    VendorProfile: {screen: VendorProfile},
+    VendorEditProfile: {screen: VendorEditProfile}
 };
 
-const drawerRoutes = {
+//User Profile
+ const drawerRoutes = {
    'Logout': {
         name: 'Logout',
         screen: createStackNavigator(Stack, {initialRouteName: 'MainScreen'})
@@ -57,18 +68,82 @@ const drawerRoutes = {
         name: 'Home',
         screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreen'})
     },
-    'Vendor Home': {
-        name: 'Vendor Home',
-        screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreenVendor'})
-    },
-    'Edit Profile': {
-        name: 'Edit Profile',
-        screen: createStackNavigator(Stack, {initialRouteName: 'UserEditProfile'})
+    'My Profile': {
+        name: 'My Profile',
+        screen: createStackNavigator(Stack, {initialRouteName: 'UserProfile'})
     }
 
 };//creates paths for the drawer navigator using the stack navigation
 
-const RootNavigator = createStackNavigator({
+//Vendor Profile
+ VendordrawerRoutes = {
+    'Logout': {
+         name: 'Logout',
+         screen: createStackNavigator(Stack, {initialRouteName: 'MainScreen'})
+     },
+     'Vendor Home': {
+         name: 'Vendor Home',
+         screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreenVendor'})
+     },
+     'My Profile': {
+         name: 'My Profile',
+         screen: createStackNavigator(Stack, {initialRouteName: 'VendorProfile'})
+     }
+ };
+
+//Initial Stack Nav Needed to fix red screen
+var RootNavigator = createStackNavigator({
+    Drawer: {
+        name: 'Drawer',
+        screen: createDrawerNavigator( 
+           VendordrawerRoutes,
+            {
+                contentComponent: CustomDrawerComponent,
+                navigationOptions:{
+                    drawerLockMode:'locked-closed' //should disable opening the drawer navigator by swiping right
+                 }
+            }
+        )
+    },
+    ...Stack
+    },
+
+    {
+        headerMode: 'none' //this removes the header for the stack navigator since we already have one for the drawer navigator
+    });
+
+
+
+/*
+//Uses diff Ham Menu depending if Vendor or User
+if(isVendor == true)
+{
+     RootNavigator = createStackNavigator({
+
+        Drawer: {
+            name: 'Drawer',
+            screen: createDrawerNavigator( 
+               VendordrawerRoutes,
+                {
+                    contentComponent: CustomDrawerComponent,
+                    navigationOptions:{
+                        drawerLockMode:'locked-closed' //should disable opening the drawer navigator by swiping right
+                     }
+                }
+            )
+        },
+        ...Stack
+    },
+    
+    {
+        headerMode: 'none' //this removes the header for the stack navigator since we already have one for the drawer navigator
+    });
+
+}
+else if(isVendor == false){
+    
+ RootNavigator = createStackNavigator({
+
     Drawer: {
         name: 'Drawer',
         screen: createDrawerNavigator( 
@@ -87,3 +162,12 @@ const RootNavigator = createStackNavigator({
 {
     headerMode: 'none' //this removes the header for the stack navigator since we already have one for the drawer navigator
 });
+
+}
+else
+{
+     RootNavigator = createStackNavigator({
+        ...Stack
+    });
+}
+*/

@@ -1,4 +1,4 @@
-//User Edit Profile Screen
+//Vendor Profile Screen
 import React, { Component } from "react";
 import * as firebase from "firebase";
 import GradientButton from 'react-native-gradient-buttons';
@@ -27,7 +27,7 @@ import {
   Label
 } from "native-base";
 
-export default class UserEditProfile extends Component {
+export default class VendorProfile extends Component {
 
   static navigationOptions = {
     title: "Edit Profile"
@@ -37,22 +37,14 @@ export default class UserEditProfile extends Component {
     super(props);
     this.state = {
       name: "",
+      days: "",
+      hours: "",
       phone: "",
       email: "",
     };
   }
 
-  //Not Working
-  getUserInfo = () => {
-      //get values from firebase database
-      let db = firebase.database();
-
-      //this.state.name = db.ref(`/users/${currentUser.uid}/name`);
-      this.state.name = "Kevin";
-  }  
-  
-
-  editUser = (email, name, phone) => {
+  editUser = (email, name, phone, days, hours) => {
      try {
      if (this.state.password.length < 6) {
        alert("Enter a password that is 6 characters or longer");
@@ -66,7 +58,9 @@ export default class UserEditProfile extends Component {
            .set({
              email: email,
              name: name,
-             phone: phone
+             phone: phone,
+             days: days,
+             hours: hours
            });
 
       } catch (error) {
@@ -76,22 +70,36 @@ export default class UserEditProfile extends Component {
 
   render() {
     return (
-      //this.getUserInfo();
-
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
         <View style={styles.formEdit}>
 
           <Text style={styles.bigBoldWhiteFont}>
-            EDIT PROFILE
+            VENDOR PROFILE
           </Text>
 
           <Item 
                 rounded
                 style={styles.formInput}>
             <Input 
-              placeholder = "Full Name"
+              placeholder = "Company Name"
               onChangeText={name => this.setState({ name })} />
+          </Item>
+
+          <Item 
+                rounded
+                style={styles.formInput}>
+            <Input 
+              placeholder = "Days Open"
+              onChangeText={name => this.setState({ days })} />
+          </Item>
+
+          <Item 
+                rounded
+                style={styles.formInput}>
+            <Input 
+              placeholder = "Hours Of Operation"
+              onChangeText={name => this.setState({ hours })} />
           </Item>
 
           <Item 
@@ -110,9 +118,10 @@ export default class UserEditProfile extends Component {
               onChangeText={email => this.setState({ email })} />
           </Item>
 
+          <View style = {styles.buttonContainer}>
           <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
-            text="Save Changes"
+            style={{ marginVertical: 8, marginTop: 10}}
+            text="Edit"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -121,15 +130,12 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-              this.editUser(
-              this.state.email,
-              this.state.name,
-              this.state.phone
-            )}
+                this.props.navigation.navigate("VendorEditProfile")
+            }
           />
 
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'left' }}
+            <GradientButton
+            style={{ marginVertical: 8, marginTop: 10}}
             text="Cancel"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
@@ -139,10 +145,12 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-               this.props.navigation.navigate("HomeScreen")
+               this.props.navigation.navigate("HomeScreenVendor")
             }
           />
-          
+          </View>
+
+
           </View>
           
         </Form>
