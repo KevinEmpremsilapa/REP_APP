@@ -17,16 +17,16 @@ import {
   StyleSheet
 } from "react-native";
 import {Header, Left, Right, Icon} from 'native-base';
-import styles from "./Styles";
+import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
 import {SearchBar} from "react-native-elements";
 const win = Dimensions.get("window");
 
 // Images
-import notFocusLocationIcon from './Images/NotCurrentLocationIcon_Opacity80.png';
-import focusLocationIcon from './Images/CurrentLocationIcon_Opacity80.png';
-import hamburgerMenuIcon from './Images/HamburgerMenuIcon.png';
+import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from '.../../assets/Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 
 export default class Home extends Component {
   constructor(props) {
