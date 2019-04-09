@@ -16,10 +16,10 @@ import {
 
 // Import GUI
 import styles from "./Styles";
-import gradientBG from './Images/gradientBG.png';
-import notFocusLocationIcon from './Images/NotCurrentLocationIcon_Opacity80.png';
-import focusLocationIcon from './Images/CurrentLocationIcon_Opacity80.png';
-import hamburgerMenuIcon from './Images/HamburgerMenuIcon.png';
+import gradientBG from '../../assets/Images/gradientBG.png';
+import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 
 import * as firebase from "firebase";
 import {Header, Left, Right, Icon} from 'native-base';
