@@ -15,7 +15,7 @@ import {
 } from "react-native";
 
 // Import GUI
-import styles from "./Styles";
+import styles from "../Styles";
 import gradientBG from '../../assets/Images/gradientBG.png';
 import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
 import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
