@@ -110,6 +110,7 @@ export default class UserEditProfile extends Component {
               onChangeText={email => this.setState({ email })} />
           </Item>
 
+          <View style = {styles.buttonContainer}>
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
             text="Save Changes"
@@ -142,6 +143,7 @@ export default class UserEditProfile extends Component {
                this.props.navigation.navigate("HomeScreen")
             }
           />
+          </View>
           
           </View>
           

@@ -1,5 +1,6 @@
 //User Edit Profile Screen
 import React, { Component } from "react";
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import * as firebase from "firebase";
 import GradientButton from 'react-native-gradient-buttons';
 import gradientBG from '../../assets/Images/gradientBG.png';
@@ -29,9 +30,6 @@ import {
 
 export default class UserProfile extends Component {
 
-  static navigationOptions = {
-    title: "Edit Profile"
-  };
 
   constructor(props) {
     super(props);
@@ -66,15 +64,25 @@ export default class UserProfile extends Component {
 
   render() {
     return (
-      <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
-        <Form>
-        <View style={styles.formEdit}>
+        <Form style={{backgroundColor: "#FFF", flex: 1}}>
+        <View>
 
-          <Text style={styles.bigBoldWhiteFont}>
+          <Text style={styles.bigBoldRedFont}>
             MY PROFILE
           </Text>
 
-          <Item 
+          <FormLabel>Name</FormLabel>
+          <FormInput/>
+
+          <FormLabel>Phone</FormLabel>
+          <FormInput/>
+
+          <FormLabel>Email</FormLabel>
+          <FormInput/>
+
+
+          {/*
+          <Item
                 rounded
                 style={styles.formInput}>
             <Input 
@@ -97,10 +105,12 @@ export default class UserProfile extends Component {
               placeholder = "Email" 
               onChangeText={email => this.setState({ email })} />
           </Item>
+          */}
 
+          <View style ={styles.buttonContainer}>
           <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
-            text="Edit"
+            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'left' }}
+            text="Edit Profile"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -112,11 +122,25 @@ export default class UserProfile extends Component {
                 this.props.navigation.navigate("UserEditProfile")
             }
           />
+          <GradientButton
+            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
+            text="Cancel"
+            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+            gradientBegin="#FFF"
+            gradientEnd="#FFF"           
+            gradientDirection="diagonal"
+            height={50}
+            width={150}
+            radius={50}             
+            onPressAction={() =>
+               this.props.navigation.navigate("HomeScreen")
+            }
+          />
           </View>
-          
-        </Form>
 
-      </ImageBackground>
+
+          </View> 
+        </Form>
     );
   }
 }

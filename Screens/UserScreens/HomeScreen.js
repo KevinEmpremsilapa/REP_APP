@@ -1,8 +1,13 @@
 //Home Screen
+/* 
+JS Changes
+  - Search bar reads input
+*/
 import React, { Component } from "react";
-import MapView, { Overlay } from "react-native-maps";
-
+import MapView from "react-native-maps";
 import {
+  Keyboard,
+  Image,
   View,
   Text,
   Button,
@@ -10,8 +15,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
-  StyleSheet,
-  Image
+  StyleSheet
 } from "react-native";
 import {Header, Left, Right, Icon} from 'native-base';
 import styles from "../Styles";
@@ -20,15 +24,19 @@ import SlidingPanel from "react-native-sliding-up-down-panels";
 import {SearchBar} from "react-native-elements";
 const win = Dimensions.get("window");
 
+// Images
+import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
+
 export default class Home extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
       latitude: null,
       longitude: null,
       error: null,
-      name: " "
+      name: " ",
     };
     this._isMounted = false;
   }
@@ -36,7 +44,6 @@ export default class Home extends Component {
   state = { currentUser: null };
 
   state = { moveToUserLocation: true };
-
   _gotoCurrentLocation(e) {
     this.map.animateToRegion({
       latitude: this.state.latitude,
@@ -54,6 +61,14 @@ export default class Home extends Component {
       this.setState({ latitude: lat });
       this.setState({ longitude: long });
       this._gotoCurrentLocation();
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        this._keyboardDidShow,
+      );
+      this.keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        this._keyboardDidHide,
+      );
     });
 
     const { currentUser } = firebase.auth();
@@ -79,12 +94,13 @@ export default class Home extends Component {
         name: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
       });
     });
-
   }
 
   componentWillUnmount()
   {
     this._isMounted = false;
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   static navigationOptions = {
@@ -94,10 +110,18 @@ export default class Home extends Component {
     )
   }
 
+  // Search bar setup
+  state = {search: '',};
+
+  updateSearch = search => {
+    this.setState({ search });
+  };
+
   render() {
 
     const { name } = this.state;
     const { currentUser } = this.state;
+    const { search } = this.state;
 
     return (
       //SearchBar
@@ -105,29 +129,15 @@ export default class Home extends Component {
       //FoodIconSlider
       //ShopTables
       
-
       //add hamburger menu to page, used to style
       <View style={styles.container2}>
-        <Header style = {{backgroundColor: '#f9e0d6'}}>
-			    <Left>
-				    <Icon name="md-menu" onPress={()=> this.props.navigation.openDrawer()}/>
-			    </Left>
-		    </Header>
+       
 		  <View style = {styles.menuOptionsStyle}>
-
-
-      <Button
-          title="Focus Location"
-          onPress={() => this._gotoCurrentLocation()}
-          style={styles.spot}
-        >
-                  location
-        </Button>
+    
         <MapView
           ref={ref => {
             this.map = ref;
           }}
-
           onMapReady={() => {
             if (
               this.state.moveToUserLocation &&
@@ -138,49 +148,73 @@ export default class Home extends Component {
               this.state.moveToUserLocation = false;
             }
           }}
+          showsCompass={true}
+          compassStyle={styles.compassPosition}
+          showsUserLocation
           onRegionChangeComplete={region => {}}
           style={{ flex: 1 }}
           region={this.props.coordinate}
           showsUserLocation={true}
-          showsMyLocationButton={true}
-          provider = "google"
         >
-
-          {/*FAKE PERSON*/}
+         {/*FAKE PERSON*/}
           <MapView.Marker
             coordinate={{
               latitude: 37.78825,
               longitude: -122.4324
             }}
           >
-            {/* 
-            <View style={styles.radius}>
-              <View style={styles.marker} />
-            </View>
-            */}
-            
             <View style={{ width: 50, height: 50 }}>
             <Image source = {require('../../assets/Images/ice-cream.png')} style={{ width: 50, height: 50 }}/>
             </View>
           </MapView.Marker>
-
         </MapView>
+        
+        {/* - - - ICONS: Hamburger, GoToLocation - - - */}
+        <View style={styles.hamburgerIconPosition}>
+              <TouchableOpacity
+                name="md-menu" 
+                onPress={()=> this.props.navigation.openDrawer()}
+              >
+                <Image 
+                  source={hamburgerMenuIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>
+          </View>
 
+          <View style={styles.locationIconPosition}>
+              <TouchableOpacity
+                onPress={() => this._gotoCurrentLocation()}
+              >
+                <Image 
+                  source={this.state.moveToUserLocation ? 
+                    focusLocationIcon : notFocusLocationIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>
+          </View>
 
+        {/* - - - SLIDING PANEL - - - */}
         <SlidingPanel
           headerLayoutHeight = {win.height - 550}
           headerLayout = {() =>
           <View style={styles.slidingPanelLayout2Style}> 
             <Text
-              style ={{fontSize: 18, fontWeight: "bold"}}>
-              {"\n\t"} Find a vendor near you {currentUser && currentUser.name}
+              style ={styles.h2}>
+              {"\n\t"} Find a Vendor Near You! {currentUser && currentUser.name}
             </Text>
             
             <SearchBar
-              placeholder = "Seach Location"
-              lightTheme
+              platform = "default"
+              placeholder = "Search Location"
               round
-              backgroundColor = "white"
+              lightTheme
+              //showLoading
+              containerStyle={styles.searchBarContainer}
+              cancelButtonTitle
+              
+              onChangeText = {this.updateSearch }
+              value = {search}
             />
 
             <Text

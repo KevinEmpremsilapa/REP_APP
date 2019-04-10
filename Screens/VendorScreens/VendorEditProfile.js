@@ -110,6 +110,8 @@ export default class VendorEditProfile extends Component {
               onChangeText={email => this.setState({ email })} />
           </Item>
 
+
+          <View style = {styles.buttonContainer}> 
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
             text="Save Changes"
@@ -142,11 +144,10 @@ export default class VendorEditProfile extends Component {
                this.props.navigation.navigate("HomeScreenVendor")
             }
           />
+          </View> 
           
-          </View>
-          
+        </View>
         </Form>
-
       </ImageBackground>
     );
   }

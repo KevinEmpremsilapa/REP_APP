@@ -121,7 +121,7 @@ export default class VendorProfile extends Component {
           <View style = {styles.buttonContainer}>
           <GradientButton
             style={{ marginVertical: 8, marginTop: 10}}
-            text="Edit"
+            text="Edit Profile"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -136,7 +136,7 @@ export default class VendorProfile extends Component {
 
             <GradientButton
             style={{ marginVertical: 8, marginTop: 10}}
-            text="Cancel"
+            text="Back"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           

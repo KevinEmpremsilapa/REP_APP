@@ -7,9 +7,29 @@ const Colors = {
 }
 
 export default StyleSheet.create({
-  safeAreaStyle:{height:100,backgroundColor: 'white', alignItems:'center', justifyContent: 'center'},
-  menuImage:{height:60, width:60, borderRadius:60},
-  drawerIcon:{fontSize:24, color:'#4C2250'},
+  // Sliding Drawer
+  safeAreaStyle:{
+    height:100,
+    backgroundColor: 'white', 
+    alignItems:'center', 
+    justifyContent: 'center'},
+  userIconImage:{
+    height:60, 
+    width:60, 
+  },
+  drawerIconSize:{
+    height: 20,
+    width: 20,
+    //color: '#FF6D6F',
+  },
+  logoutIconSize:{
+    height: 14,
+    width: 18,
+  },
+  drawerIcon:{
+    fontSize:24, 
+    color:'#4C2250'
+  },
   menuOptionsStyle: {flex:1},
   headerLayoutStyle: { 
     height: 100,
@@ -40,6 +60,8 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
+
+  // Containers / Defaults
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -132,11 +154,17 @@ export default StyleSheet.create({
   searchBarContainer:{
     backgroundColor: '#FFF',
   },
-  bigBoldWhiteFont:{
+   bigBoldWhiteFont:{
     fontWeight: 'bold',
     fontSize: 28,
     textAlign: 'center',
     color: '#FFF'
+  },
+  bigBoldRedFont:{
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
   },
 
   // Buttons
@@ -214,6 +242,23 @@ export default StyleSheet.create({
     top: 120,
     right:0,
   },
+
+  // Text Styles
+  h1:{
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#363636',
+  },
+  h2:{
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#363636',
+  },
+  p1:{
+    fontSize: 12,
+  },
+
+
 })
 
 /*
@@ -235,8 +280,10 @@ Colors:
   #C06C84
   #6C5B7B
   #355C7D
+
   // Font Colors
   #363636
+
   // Grey
   #C7C7C7 rgba(199,199,199, .8)
  */
