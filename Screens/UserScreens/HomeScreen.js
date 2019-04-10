@@ -6,6 +6,7 @@ JS Changes
 import React, { Component } from "react";
 import MapView from "react-native-maps";
 import {
+  Keyboard,
   Image,
   View,
   Text,
@@ -17,16 +18,16 @@ import {
   StyleSheet
 } from "react-native";
 import {Header, Left, Right, Icon} from 'native-base';
-import styles from "../Styles";
+import styles from "./Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
 import {SearchBar} from "react-native-elements";
 const win = Dimensions.get("window");
 
 // Images
-import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
-import focusLocationIcon from '.../../assets/Images/CurrentLocationIcon_Opacity80.png';
-import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
+import notFocusLocationIcon from './Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from './Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from './Images/HamburgerMenuIcon.png';
 
 export default class Home extends Component {
   constructor(props) {
@@ -60,7 +61,22 @@ export default class Home extends Component {
       this.setState({ latitude: lat });
       this.setState({ longitude: long });
       this._gotoCurrentLocation();
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        this._keyboardDidShow,
+      );
+      this.keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        this._keyboardDidHide,
+      );
     });
+
+    componentWillUnmount()
+    {
+      this._isMounted = false;
+      this.keyboardDidShowListener.remove();
+      this.keyboardDidHideListener.remove();
+    }
 
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
@@ -85,10 +101,6 @@ export default class Home extends Component {
         name: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
       });
     });
-  }
-  componentWillUnmount()
-  {
-    this._isMounted = false;
   }
 
   static navigationOptions = {
