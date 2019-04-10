@@ -15,11 +15,11 @@ import {
 } from "react-native";
 
 // Import GUI
-import styles from "../Styles";
-import gradientBG from '../../assets/Images/gradientBG.png';
-import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
-import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
-import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
+import styles from "./Styles";
+import gradientBG from './Images/gradientBG.png';
+import notFocusLocationIcon from './Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from './Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from './Images/HamburgerMenuIcon.png';
 
 import * as firebase from "firebase";
 import {Header, Left, Right, Icon} from 'native-base';
@@ -177,7 +177,8 @@ export default class HomeVendor extends Component {
             </View>
           </MapView.Marker>
          </MapView>
-
+          
+        {/* - - - ICONS: Hamburger, GoToLocation - - - */}
          <View style={styles.hamburgerIconPosition}>
               <TouchableOpacity
                 name="md-menu" 
@@ -201,26 +202,26 @@ export default class HomeVendor extends Component {
                   />
               </TouchableOpacity>
           </View>
-
+          
+          {/* - - - VENDOR LOCATION BUTTON - - - */}
           <View style={styles.vendorLocationButtonAlign}>
-              <GradientButton
-                  // VENDOR LOCATION BUTTON
-                  styles={{alignSelf: 'center'}}
-                  text={this.state.isVendorLocationOn ? 
-                    "Turn Off Location" : "Turn On Location"}
-                  textStyle={{ fontSize: 20, color: '#FFF'}}     
-                  gradientBegin={this.state.isVendorLocationOn ? 
-                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}
-                  gradientEnd={this.state.isVendorLocationOn ? 
-                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
-                  gradientDirection="diagonal"
-                  height={50}
-                  width={250} 
-                  radius={50}
-                  success
-                  onPressAction={() => this._handleVendorLocation()}
-                /> 
-            </View>  
+            <GradientButton
+              styles={{alignSelf: 'center'}}
+              text={this.state.isVendorLocationOn ? 
+                "Turn Off Location" : "Turn On Location"}
+              textStyle={{ fontSize: 20, color: '#FFF'}}     
+              gradientBegin={this.state.isVendorLocationOn ? 
+                'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}
+              gradientEnd={this.state.isVendorLocationOn ? 
+                'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
+              gradientDirection="diagonal"
+              height={50}
+              width={250} 
+              radius={50}
+              success
+              onPressAction={() => this._handleVendorLocation()}
+              /> 
+          </View>  
         </View>
    
     );
