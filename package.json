@@ -1,0 +1,38 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "expo": "^32.0.0",
+    "firebase": "^5.6.0",
+    "geolib": "^2.0.24",
+    "mysql": "^2.16.0",
+    "native-base": "^2.12.1",
+    "react": "16.5.0",
+    "react-collapsible": "^2.6.0",
+    "react-collapsible-component": "^1.1.2",
+    "react-native": "^0.57.1",
+    "react-native-circle-drawer": "^1.0.0",
+    "react-native-elements": "^0.19.1",
+    "react-native-firebase": "^5.1.1",
+    "react-native-gradient-buttons": "^1.3.0",
+    "react-native-hide-show-password-input": "^1.0.7",
+    "react-native-linear-gradient": "^2.5.4",
+    "react-native-maps": "^0.23.0",
+    "react-native-search-bar": "^3.4.2",
+    "react-native-search-box": "0.0.19",
+    "react-native-sliding-up-down-panels": "^1.0.0",
+    "react-native-util": "^1.0.2",
+    "react-navigation": "^2.17.0",
+    "react-new-window": "0.0.12",
+    "rn-sliding-up-panel": "^2.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^5.0.0"
+  },
+  "private": true
+}
