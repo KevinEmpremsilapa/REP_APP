@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import MapView from "react-native-maps";
 import {
+  Image,
   View,
   Text,
   Button,
@@ -9,26 +10,24 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
-  Asyncstorage
+  Asyncstorage,
+  ImageBackground,
 } from "react-native";
+
+// Import GUI
 import styles from "../Styles";
+import gradientBG from '../../assets/Images/gradientBG.png';
+import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
+import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
+import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
+
 import * as firebase from "firebase";
 import {Header, Left, Right, Icon} from 'native-base';
 import SlidingPanel from "react-native-sliding-up-down-panels";
 import {SearchBar} from "react-native-elements";
 import GradientButton from 'react-native-gradient-buttons';
 const win = Dimensions.get("window");
-var isVendorLocationOn = false;
 
-// JS adds
-  // Turn Vendor Location Button ON
-  turnVendorLocationOn = () =>{
-    this.style=[styles.turnOnVendorLocationButton, styles.vendorLocationButton];
-  }
-  // Turn Vendor Location Button OFF
-  turnVendorLocationOff = () =>{
-    this.style=[styles.turnOffVendorLocationButton, styles.vendorLocationButton];
-  }
 
 export default class HomeVendor extends Component {
   constructor(props) {
@@ -38,69 +37,51 @@ export default class HomeVendor extends Component {
       longitude: null,
       error: null,
       name: " ",
+      isVendorLocationOn: false,
+      isLocationFocused: true,
     };
-    isVendorLocationOn = false;
   }
 
-  // JS - Vendor Location Button Status
-  _vendorLocationOn() {
-    this.setState({ vendorLocationOn: turn });
-  }
+  // Vendor Location Button
+    // Default is OFF
+  _handleVendorLocation = () =>{
+    const { isVendorLocationOn } = this.state;
 
-  _vendorLocationOff() {
-    this.setState({ vendorLocationOn: false });
-  }
-
-  vendorLocationButtonPressed(){
-    
-    // Turn on vendor Location
-    if(isVendorLocationOn == false){
-      isVendorLocationOn = true;
-      return <GradientButton
-      style={styles.turnOnVendorLocationButton}
-      text={"Turn Off Location"}
-      textStyle={{ fontSize: 20, color: '#FFF'}}
-      height={50}
-      width={250} 
-      alignSelf="center"     
-      gradientBegin={'rgba(199,199,199, .8)'}
-      gradientEnd={'rgba(199,199,199, .8)'}          
-      gradientDirection="diagonal"
-      success
-      onPressAction={() => this.vendorLocationButtonPressed()}
-    />
+    // If vendor location is ON
+    if(isVendorLocationOn){
+      this.setState({ isVendorLocationOn: false });
     }
-    // Turn off vendor location
-    else if (isVendorLocationOn == true){
-      isVendorLocationOn = false;
-      return <GradientButton
-      style={styles.turnOnVendorLocationButton}
-      text={"Turn On Location"}
-      textStyle={{ fontSize: 20, color: '#FFF'}}
-      height={50}
-      width={250} 
-      alignSelf="center"     
-      gradientBegin={'rgba(255,109,111, .8)'}
-      gradientEnd={'rgba(255,109,111, .8)'}          
-      gradientDirection="diagonal"
-      success
-      onPressAction={() => this.vendorLocationButtonPressed()}
-    />
+    // If vendor location is OFF
+    else{
+      this.setState({ isVendorLocationOn: true });
     }
   }
-  
+
+  _handleFocusLocation = () =>{
+    const {isLocationFocused} = this.state;
+
+    // IF location is focused
+    if(isVendorLocationOn){
+      this.setState({ isVendorLocationOn: false });
+    }
+    // IF location is NOT focused
+    else{
+      this.setState({ isVendorLocationOn: true });
+    }
+  }
+
   state = { currentUser: null };
   state = { moveToUserLocation: true };
-  //will animate zoom in on location on press
+  // will animate zoom in on location on press
   _gotoCurrentLocation(e) {
     this.map.animateToRegion({
       latitude: this.state.latitude,
       longitude: this.state.longitude,
       latitudeDelta: 0.0059397161733585335,
-      longitudeDelta: 0.005845874547958374
+      longitudeDelta: 0.005845874547958374,
     });
   }
-//find position of user using geolocation: longitute and lattitude
+// find position of user using geolocation: longitute and lattitude
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(position => {
       var lat = parseFloat(position.coords.latitude);
@@ -113,11 +94,11 @@ export default class HomeVendor extends Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
 
-    //get values from firebase database
+    // get values from firebase database
     let db = firebase.database();
 
-    //only works for specific user name when /users/UID/name
-    //can get all user information by: /users/uid
+    // only works for specific user name when /users/UID/name
+    // can get all user information by: /users/uid
     let ref = db.ref(`/vendors/${currentUser.uid}/name`);
 
     //get user info and display in alert box
@@ -147,28 +128,18 @@ export default class HomeVendor extends Component {
     const { currentUser } = this.state;
 
     return (
-      //SearchBar
-      //Map
-      //FoodIconSlider
-      //ShopTables
-      <View style={styles.container2}>
-        <Header style = {{backgroundColor: '#f9e0d6'}}>
-          <Left>
-            <Icon name="md-menu" onPress={()=> this.props.navigation.openDrawer()}/>
-          </Left>
-        </Header>
-        <View style = {styles.menuOptionsStyle}>
+      // Hamburger Menu bar
+      // Map
+      // Turn ON/OFF vendor location
+      <View style={styles.vendorMapContainer}>
+
+        {/*
+        TEST DATA
         <Text>Welcome {name} ! </Text>
         <Text>Email {currentUser && currentUser.email} </Text>
-        <Text>User Id {currentUser && currentUser.uid} ! </Text>
-        <View>
-        <Button
-          title="Focus Location"
-          onPress={() => this._gotoCurrentLocation()}
-          style={styles.spot}
-        />
-        </View>
-
+        <Text>User Id {currentUser && currentUser.uid} ! </Text>     
+        */}  
+        
         <MapView
           ref={ref => {
             this.map = ref;
@@ -178,18 +149,23 @@ export default class HomeVendor extends Component {
               this.state.moveToUserLocation &&
               this.props.userLocation.data.coords &&
               this.props.userLocation.data.coords.latitude 
-            
             ) {
               this._gotoCurrentLocation();
               this.state.moveToUserLocation = false;
             }
           }}
-          showsUserLocation
+
+          //showsUserLocation
+          showsCompass={true}
+          compassStyle={styles.compassPosition}
           onRegionChangeComplete={region => {}}
           style={{ flex: 1}}
+          provider="google"
           region={this.props.coordinate}
-          showsUserLocation={true}
+          showsUserLocation={this.state.isVendorLocationOn ? true : false}
+          followsUserLocation={this.state.isVendorLocationOn ? true : false}
         >
+       
           <MapView.Marker
             coordinate={{
               latitude: 37.78825,
@@ -200,16 +176,53 @@ export default class HomeVendor extends Component {
               <View style={styles.marker} />
             </View>
           </MapView.Marker>
-        
-        </MapView>
-      </View>
+         </MapView>
 
-      <View style={styles.vendorLocationButtonAlign}>
-            {this.vendorLocationButtonPressed()}
-            <Text>{String(isVendorLocationOn)}</Text>
-      </View>
-    
-      </View>
+         <View style={styles.hamburgerIconPosition}>
+              <TouchableOpacity
+                name="md-menu" 
+                onPress={()=> this.props.navigation.openDrawer()}
+              >
+                <Image 
+                  source={hamburgerMenuIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>
+          </View>
+
+          <View style={styles.locationIconPosition}>
+              <TouchableOpacity
+                onPress={() => this._gotoCurrentLocation()}
+              >
+                <Image 
+                  source={this.state.moveToUserLocation ? 
+                    focusLocationIcon : notFocusLocationIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>
+          </View>
+
+          <View style={styles.vendorLocationButtonAlign}>
+              <GradientButton
+                  // VENDOR LOCATION BUTTON
+                  styles={{alignSelf: 'center'}}
+                  text={this.state.isVendorLocationOn ? 
+                    "Turn Off Location" : "Turn On Location"}
+                  textStyle={{ fontSize: 20, color: '#FFF'}}     
+                  gradientBegin={this.state.isVendorLocationOn ? 
+                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}
+                  gradientEnd={this.state.isVendorLocationOn ? 
+                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
+                  gradientDirection="diagonal"
+                  height={50}
+                  width={250} 
+                  radius={50}
+                  success
+                  onPressAction={() => this._handleVendorLocation()}
+                /> 
+            </View>  
+        </View>
+   
     );
   }
 };
