@@ -40,10 +40,10 @@ import {
   Button,
   Label
 } from "native-base";
-
+global.isVendor = false;
 export default class App extends React.Component {
-
   // Show / Hide Password
+  
   managePasswordVisibility = () =>
   {
     this.setState({ hidePassword: !this.state.hidePassword });
@@ -59,7 +59,7 @@ export default class App extends React.Component {
       password: "",
       error: "",
       loading: false,
-      hidePassword: true
+      hidePassword: true,
     };
   }
 
@@ -93,8 +93,9 @@ export default class App extends React.Component {
         
           //check if user was found
           if (this.state.name != "null" && this.state.name != null) {
+            global.isVendor = false;//starts using vendor ham menu
             this.props.navigation.navigate("HomeScreen");
-            this.setState({ error: "", loading: false });
+            this.setState({ error: "", loading: false});
           } else {
             this.setState({
               error: "\nAre you a vendor? try signing in as vendor"
@@ -131,8 +132,9 @@ export default class App extends React.Component {
           });
 
           if (this.state.name != "null" && this.state.name != null) {
+            global.isVendor = true; //starts using vendor ham menu
             this.props.navigation.navigate("HomeScreenVendor");
-            this.setState({ error: "", loading: false });
+            this.setState({ error: "", loading: false});
           } else {
             this.setState({
               error: "\nAre you a user? try signing in as user"
@@ -147,7 +149,6 @@ export default class App extends React.Component {
 
   // Screen View Login Page
   render() {
-    
     return (
       
        <ImageBackground source={sunsetBG} style={styles.backgroundContainer}>
@@ -182,8 +183,10 @@ export default class App extends React.Component {
                     style = { styles.btnImage } />
                 </TouchableOpacity>
               </Item>
+              
+              <View style = {styles.buttonContainer}>
               <GradientButton
-                style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
+                style={{ marginVertical: 8, marginTop: 15}}
                 text="User Login"
                 textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
                 gradientBegin="#FFF"
@@ -196,7 +199,7 @@ export default class App extends React.Component {
                 onPressAction={() => this.loginUser(this.state.email, this.state.password)}
               />
               <GradientButton
-                style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
+                style={{ marginVertical: 8, marginTop: 15}}
                 text="Vendor Login"
                 textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
                 gradientBegin="#FFF"
@@ -208,6 +211,8 @@ export default class App extends React.Component {
                 success
                 onPressAction={() => this.loginVendor(this.state.email, this.state.password)}
               />
+              </View>
+
             </Form>
           </View>
 

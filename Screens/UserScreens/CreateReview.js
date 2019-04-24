@@ -27,36 +27,24 @@ import {
   Label
 } from "native-base";
 
-export default class Signup extends Component {
-  static navigationOptions = {
-    title: "SignUpVendor"
-  };
-
-  managePasswordVisibility = () =>
-  {
-    this.setState({ hidePassword: !this.state.hidePassword });
-  }
+export default class CreateReview extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      company: "",
-      phone: "",
-      email: "",
-      password: "",
+      stars: 0,
+      title: "",
+      description: "",
+      vendorID: "",
+      userID: "",
       error: "",
       loading: false,
-      hidePassword: true,
     };
   }
 
-  signUpUser = (email, password, name, phone, company) => {
+  signUpUser = (stars, title, description, vendorID, userID) => {
     try {
-      if (this.state.password.length < 6) {
-        alert("Enter a password that is 6 characters or longer");
-        return;
-      }
+      
 
       //add user and user ID
       firebase
@@ -86,7 +74,7 @@ export default class Signup extends Component {
           <View style={styles.form}>
 
           <Text style={styles.bigBoldWhiteFont}>
-            VENDOR SIGNUP
+            Create Review
           </Text>
 
           <Item 
@@ -121,26 +109,6 @@ export default class Signup extends Component {
               placeholder = "Email"
               onChangeText={email => this.setState({ email })} />
           </Item>
-
-          <Item 
-            rounded
-            style={styles.formInput}>
-            <Input     
-              placeholder = "Password"
-              underlineColorAndroid = "transparent" 
-              secureTextEntry = { this.state.hidePassword } 
-              style = { styles.textBox }
-              onChangeText={password => this.setState({ password })}
-            />
-            <TouchableOpacity 
-              activeOpacity = { 0.8 } 
-              style = { styles.visibilityBtn } 
-              onPress = { this.managePasswordVisibility }>
-              <Image 
-                source = { ( this.state.hidePassword ) ? require('../../assets/Images/hide.png') : require('../../assets/Images/view.png') } 
-                style = { styles.btnImage } />
-            </TouchableOpacity>
-          </Item>
           
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
@@ -161,23 +129,6 @@ export default class Signup extends Component {
               this.state.company
             )}
             />
-          </View>
-
-          <View style={styles.bottom}>
-          <Text
-            style={styles.smallFont}
-            onPress={() => this.props.navigation.navigate("MainScreen")}
-          >
-            Already have an account? Login{" "}
-            <Text style={{ textDecorationLine: "underline" }}>here</Text>
-          </Text>
-          <Text
-            style={styles.smallFont}
-            onPress={() => this.props.navigation.navigate("SignupScreen")}
-          >
-            Are you a new user? Sign up{" "}
-            <Text style={{ textDecorationLine: "underline" }}>here</Text>
-          </Text>
           </View>
         </Form>
       </ImageBackground>

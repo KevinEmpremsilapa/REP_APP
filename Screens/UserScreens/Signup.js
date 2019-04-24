@@ -83,6 +83,11 @@ export default class Signup extends Component {
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
         <View style={styles.form}>
+
+          <Text style={styles.bigBoldWhiteFont}>
+            USER SIGNUP
+          </Text>
+
           <Item 
                 rounded
                 style={styles.formInput}>

@@ -1,9 +1,9 @@
 //User Edit Profile Screen
 import React, { Component } from "react";
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import * as firebase from "firebase";
 import GradientButton from 'react-native-gradient-buttons';
 import gradientBG from '../../assets/Images/gradientBG.png';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import styles from "../Styles";
 
 import {
@@ -28,7 +28,8 @@ import {
   Label
 } from "native-base";
 
-export default class UserEditProfile extends Component {
+export default class UserProfile extends Component {
+
 
   constructor(props) {
     super(props);
@@ -39,62 +40,90 @@ export default class UserEditProfile extends Component {
     };
   }
 
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+      this._gotoCurrentLocation();
+    });
 
-
-  editUser = (email, name, phone) => {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
 
-
-    //get values from firebase database
+    // get values from firebase database
     let db = firebase.database();
-    let ref = db.ref(`/users/${currentUser.uid}/`);
 
-   try {
- 
-       //Update email name and phone in firebase
-       ref.set({
-           email: email,
-           name: name,
-           phone: phone
-         });
+    // only works for specific user name when /users/UID/name
+    // can get all user information by: /users/uid
+    
+    //get phone
+    let phoneRef = db.ref(`/users/${currentUser.uid}/phone`);
+    //set phone number from database to the phone variable
+    phoneRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        phone: snapshot.val()
+      });
+    });
+    
+   //get NAme
+    let nameRef = db.ref(`/users/${currentUser.uid}/name`);
+    //this sets name to name
+    nameRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        name: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
+      });
+    });
 
-    } catch (error) {
-   console.log(error.toString());
-    }
-   };
+    let emailRef = db.ref(`/users/${currentUser.uid}/email`);
+    //this sets name to name
+    emailRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        email: snapshot.val()
+      });
+    });
+  }
+
 
   render() {
+    
+    const {phone} = this.state
+    const {name} = this.state
+    const {email} = this.state
+
     return (
-      //this.getUserInfo();
-
-     // <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
-          <Form style={{backgroundColor: "#FFF", flex: 1}}>
-             <View>
-
+        <Form style={{backgroundColor: "#FFF", flex: 1}}>
+        <View>
 
           <Text style={styles.bigBoldRedFont}>
-            EDIT PROFILE
+            MY PROFILE
           </Text>
 
           <FormLabel>Name</FormLabel>
-          <FormInput placeholder = " "
-        onChangeText={name => this.setState({ name })}/>
+          <FormInput
+          placeholder = {name}
+          disabled = {true}
+          />
 
           <FormLabel>Phone</FormLabel>
-          <FormInput placeholder = " "
-        onChangeText={phone => this.setState({ phone })}/>
+          <FormInput
+          placeholder = {phone}
+          disabled = {true}
+          />
 
           <FormLabel>Email</FormLabel>
-          <FormInput placeholder = " "
-        onChangeText={email => this.setState({ email })}/>
+          <FormInput
+          placeholder = {email}
+          disabled = {true}
+          />
 
-          {/*}
-          <Text style={styles.bigBoldWhiteFont}>
-            EDIT PROFILE
-          </Text>
 
-          <Item 
+          {/*
+          <Item
                 rounded
                 style={styles.formInput}>
             <Input 
@@ -117,12 +146,12 @@ export default class UserEditProfile extends Component {
               placeholder = "Email" 
               onChangeText={email => this.setState({ email })} />
           </Item>
-    */}
+          */}
 
-          <View style = {styles.buttonContainer}>
+          <View style ={styles.buttonContainer}>
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
-            text="Save Changes"
+            text="Edit Profile"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -131,13 +160,9 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-              this.editUser(
-              this.state.email,
-              this.state.name,
-              this.state.phone
-            )}
+                this.props.navigation.navigate("UserEditProfile")
+            }
           />
-
           <GradientButton
             style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
             text="Cancel"
@@ -153,12 +178,10 @@ export default class UserEditProfile extends Component {
             }
           />
           </View>
-          
-          </View>
-          
-        </Form>
 
-      //</ImageBackground>
+
+          </View> 
+        </Form>
     );
   }
 }
