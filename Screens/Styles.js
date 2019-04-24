@@ -11,7 +11,7 @@ export default StyleSheet.create({
   subtitleView: {
     flexDirection: 'row',
     height: 50,
-    paddingLeft: 15,
+    paddingLeft: 50,
     paddingTop: 5
   },
   titleText: {
@@ -19,6 +19,11 @@ export default StyleSheet.create({
     fontSize:20, 
     paddingLeft: 15,
     color: '#380e82'
+  },
+  distanceText: {
+    fontSize:15, 
+    //paddingLeft: 15,
+    color: 'black'
   },
   subtitleText: {
     fontSize:15, 

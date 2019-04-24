@@ -34,6 +34,19 @@ import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 import popsicleIcon from '../../assets/Images/popsicleLocator.png';
 import userIcon from '../../assets/Images/defaultUserIcon.png';
 global.vendorID = "w5IDMgq00pYaaGWucHnCBkx8zUy1";
+function getDistanceInMiles(lat1,lon1,lat2,lon2) { 
+  var R = 6371; // Radius of the earth in km 
+  var dLat = deg2rad(lat2-lat1); // deg2rad below 
+  var dLon = deg2rad(lon2-lon1); 
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2) ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var d = R * c; // Distance in km 
+  var e = Math.round(d*0.62137*100)/100;
+  return e; 
+} 
+function deg2rad(deg) { 
+  return deg * (Math.PI/180) 
+}
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -58,19 +71,6 @@ export default class Home extends Component {
       longitudeDelta: 0.005845874547958374
     });
   }
-  /*
-  getDistance(vLat, vLong)
-  {
-    console.log("in getdistance");
-    var meterDistance = geolib.getDistance(
-      {latitude: vLat, longitude: vLong},
-      {latitude: this.state.latitude, longitude: this.state.longitude}
-    );
-    console.log(meterDistance);
-    var mileDistance = geolib.convertUnit('mi',meterDistance,2);
-    console.log(mileDistance);
-    return mileDistance;
-  }*/
 
   componentDidMount() {
     this._isMounted =true;
@@ -115,7 +115,7 @@ export default class Home extends Component {
       });
     });
 
-    let vendorRef = db.ref(`/vendors`);
+    let vendorRef = db.ref(`/vendors`).orderByChild("location/vendorLatitude");
     //this sets name to name
     vendorRef.once("value").then(snapshot => {
       this.setState({
@@ -306,14 +306,14 @@ export default class Home extends Component {
                     subtitle={
                       <View style={styles.subtitleView}>
                         <Text style={styles.subtitleText}>{l.typeVendor}</Text>
-                        <Text style={styles.subtitleText}>{}</Text>
+                        <Text style={styles.distanceText}>{getDistanceInMiles(this.state.latitude,this.state.longitude,l.location.vendorLatitude,l.location.vendorLongitude)}mi</Text>
                       </View>
                     }
                     avatar={
                       <Image 
-                  source={userIcon}
-                  style={styles.mapIconStyle}
-                    />}
+                        source={userIcon}
+                        style={styles.mapIconStyle}
+                      />}
                     onPress={()=> this.props.navigation.navigate("ViewVendorProfile")}
                   >
                   {/*global.vendorID= l.id*/}
