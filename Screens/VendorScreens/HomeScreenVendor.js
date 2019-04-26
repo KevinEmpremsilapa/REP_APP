@@ -1,6 +1,6 @@
 //Home Screen Vendor
 import React, { Component } from "react";
-import MapView from "react-native-maps";
+import MapView, { AnimatedRegion } from "react-native-maps";
 import {
   Image,
   View,
@@ -37,7 +37,7 @@ export default class HomeVendor extends Component {
       longitude: null,
       error: null,
       name: " ",
-      isVendorLocationOn: false,
+      isVendorLocationOn: true, 
       isLocationFocused: true,
     };
   }
@@ -47,12 +47,18 @@ export default class HomeVendor extends Component {
   _handleVendorLocation = () =>{
     const { isVendorLocationOn } = this.state;
 
+    //Getting DB info
+    let currentUser = firebase.auth().currentUser;
+    let db = firebase.database();
+
     // If vendor location is ON
     if(isVendorLocationOn){
+      db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: isVendorLocationOn});
       this.setState({ isVendorLocationOn: false });
     }
     // If vendor location is OFF
     else{
+      db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: isVendorLocationOn});
       this.setState({ isVendorLocationOn: true });
     }
   }
@@ -80,7 +86,33 @@ export default class HomeVendor extends Component {
       latitudeDelta: 0.0059397161733585335,
       longitudeDelta: 0.005845874547958374,
     });
+
+    //CALLS SAVE LOCATION
+    this.SaveLocation(this.state.latitude,this.state.longitude);
   }
+
+  //---------SAVES VENDOR LOCATION TO DATABASE---------//
+  SaveLocation (latitude, longitude){
+
+      let currentUser = firebase.auth().currentUser; //Gets Current UserID
+      let db = firebase.database();
+
+      //Update values from firebase database
+      db.ref(`/vendors/${currentUser.uid}`).update({latitude: latitude});
+      db.ref(`/vendors/${currentUser.uid}`).update({longitude: longitude});
+   };
+
+  //---------SET CURRENT LOCATION TO LOCAL COORDS ---------//
+  GetLocation(e)
+  {
+    navigator.geolocation.getCurrentPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+    });
+  }
+
 // find position of user using geolocation: longitute and lattitude
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(position => {
@@ -94,6 +126,16 @@ export default class HomeVendor extends Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
 
+    //--- WATCHES FOR CHANGE IN POSITION THEN UPDATES COORDS ---//
+    navigator.geolocation.watchPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+      this.SaveLocation(this.state.latitude,this.state.longitude);
+    });
+  
+
     // get values from firebase database
     let db = firebase.database();
 
@@ -101,6 +143,11 @@ export default class HomeVendor extends Component {
     // can get all user information by: /users/uid
     let ref = db.ref(`/vendors/${currentUser.uid}/name`);
 
+
+    //-------- Gets isVendorLocationOn From DB -------------//
+    db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: this.state.isVendorLocationOn});
+    this._handleVendorLocation();
+   
     //get user info and display in alert box
     ref.on("value", function(snapshot) {
       const messageText = JSON.stringify(snapshot.val());
@@ -121,6 +168,7 @@ export default class HomeVendor extends Component {
     drawerIcon: ({})=>(
       <Icon name="md-home" style={{fontSize:24, color:'#4C2250'}}/>
     )
+    
   }
 
   render() {
@@ -150,7 +198,7 @@ export default class HomeVendor extends Component {
               this.props.userLocation.data.coords &&
               this.props.userLocation.data.coords.latitude 
             ) {
-              this._gotoCurrentLocation();
+              //this._gotoCurrentLocation();
               this.state.moveToUserLocation = false;
             }
           }}
@@ -207,12 +255,12 @@ export default class HomeVendor extends Component {
                   // VENDOR LOCATION BUTTON
                   styles={{alignSelf: 'center'}}
                   text={this.state.isVendorLocationOn ? 
-                    "Turn Off Location" : "Turn On Location"}
+                     "Turn Off Location" : "Turn On Location" }
                   textStyle={{ fontSize: 20, color: '#FFF'}}     
                   gradientBegin={this.state.isVendorLocationOn ? 
                     'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}
                   gradientEnd={this.state.isVendorLocationOn ? 
-                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
+                   'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
                   gradientDirection="diagonal"
                   height={50}
                   width={250} 

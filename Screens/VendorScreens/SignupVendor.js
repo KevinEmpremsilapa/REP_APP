@@ -48,16 +48,18 @@ export default class Signup extends Component {
       error: "",
       loading: false,
       hidePassword: true,
+      latitude: 118,
+      longitude: 34,//LA CORDINATES DEFAULT
+      isVendorLocationOn: false,
     };
   }
 
-  signUpUser = (email, password, name, phone, company) => {
+  signUpUser = (email, password, name, phone, company, laditude, longitude, isVendorLocationOn) => {
     try {
       if (this.state.password.length < 6) {
         alert("Enter a password that is 6 characters or longer");
         return;
       }
-
       //add user and user ID
       firebase
         .auth()
@@ -67,9 +69,15 @@ export default class Signup extends Component {
             .database()
             .ref("vendors/" + res.user.uid)
             .set({
+            //-----CREATING/SAVING DATA TO FIREBASE-----//
               email: email,
               name: name,
-              phone: phone
+              password: password,
+              phone: phone,
+              company: company,
+              latitude: latitude,
+              longitude: longitude,
+              isVendorLocationOn: isVendorLocationOn,
             });
         });
     } catch (error) {
@@ -101,7 +109,7 @@ export default class Signup extends Component {
             style={styles.formInput}>
             <Input 
               placeholder = "Company Name"
-              onChangeText={name => this.setState({ company })} />
+              onChangeText={company => this.setState({ company })} />
           </Item>
 
           <Item 
@@ -156,7 +164,11 @@ export default class Signup extends Component {
               this.state.password,
               this.state.name,
               this.state.phone,
-              this.state.company
+              this.state.company,
+              this.state.laditude, 
+              this.state.longitude,
+              this.state.isVendorLocationOn,
+              this.props.navigation.navigate("MainScreen")
             )}
             />
           </View>
