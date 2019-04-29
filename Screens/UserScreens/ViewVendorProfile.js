@@ -23,7 +23,7 @@ import {Header, Left, Right, Icon,Form,} from 'native-base';
 import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
-import {SearchBar, ListItem,FormLabel, FormInput, FormValidationMessage} from "react-native-elements";
+import {Rating, SearchBar, ListItem,FormLabel, FormInput, FormValidationMessage} from "react-native-elements";
 import GradientButton from 'react-native-gradient-buttons';
 const win = Dimensions.get("window");
 
@@ -34,7 +34,7 @@ import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80
 import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 import popsicleIcon from '../../assets/Images/popsicleLocator.png';
 
-global.vendorID = "w5IDMgq00pYaaGWucHnCBkx8zUy1";
+//global.vendorID = "1rBfk986QLbSmwtN5nmvxo1uj522";
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -47,12 +47,15 @@ export default class Home extends Component {
         city: " ",
         phone: " ",
         email: " ",
-        vendorLat: 34.23041,
-        vendorLong: -118.39283
+        vendorLat: 34.230,
+        vendorLong: -118.392,
+        numOfReviews: 0,
+        numOfStars: 0,
+        ratingNum:0
     };
     this._isMounted = false;
   }
-
+  
   state = { currentUser: null };
 
   state = { moveToUserLocation: true };
@@ -74,6 +77,7 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
+    console.log("passed rating"+ratingValue);
     this._isMounted =true;
     navigator.geolocation.getCurrentPosition(position => {
       var lat = parseFloat(position.coords.latitude);
@@ -137,7 +141,7 @@ export default class Home extends Component {
     daysRef.once("value").then(snapshot => {
     this.setState({
         //.replace removes special characters like " " or '
-        daysOfOp: JSON.stringify(snapshot.val())
+        daysOfOp: (snapshot.val())
     });
     });
 
@@ -147,7 +151,7 @@ export default class Home extends Component {
     hoursRef.once("value").then(snapshot => {
     this.setState({
         //.replace removes special characters like " " or '
-        hours: JSON.stringify(snapshot.val())
+        hours: (snapshot.val())
     });
     });
 
@@ -162,24 +166,57 @@ export default class Home extends Component {
     });
 
     //get latitude
-    let latRef = db.ref(`/vendors/${vendorID}/location/vendorLatitude`);
+    let latRef = db.ref(`/vendors/${vendorID}/latitude`);
     //this sets name to name
     latRef.once("value").then(snapshot => {
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
         this.setState({
         //.replace removes special characters like " " or '
         vendorLat: snapshot.val()
         });
+      }
     });
 
     //get longitude
-    let longRef = db.ref(`/vendors/${vendorID}/location/vendorLongitude`);
+    let longRef = db.ref(`/vendors/${vendorID}/longitude`);
     //this sets name to name
     longRef.once("value").then(snapshot => {
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
         this.setState({
         //.replace removes special characters like " " or '
         vendorLong: snapshot.val()
         });
+      }
     });
+/*
+    let reviewsRef = db.ref(`/vendors/${vendorID}/numOfReviews`);
+    //this sets name to name
+    reviewsRef.once("value").then(snapshot => {
+      //console.log(snapshot.val());
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
+        this.setState({
+        //.replace removes special characters like " " or '
+        numOfReviews: snapshot.val()
+        });
+      }
+    });
+
+    let starsRef = db.ref(`/vendors/${vendorID}/numOfStars`);
+    //this sets name to name
+    starsRef.once("value").then(snapshot => {
+      //console.log(snapshot.val());
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
+        this.setState({
+        //.replace removes special characters like " " or '
+          numOfStars: snapshot.val()
+        });
+        this.setState({
+          ratingNum: this.state.numOfStars/this.state.numOfReviews
+        });
+        //console.log(this.state.ratingNum);
+      }
+    });
+*/
     }
 
     /*
@@ -195,9 +232,10 @@ export default class Home extends Component {
     const {phone} = this.state
     const {vendorLat} = this.state
     const {vendorLong} = this.state
-    
+    /*const {numOfReviews} = this.state
+    const {numOfStars} = this.state
+    const {ratingNum} = this.state*/
     const { currentUser } = this.state;
-
     return (
       //SearchBar
       //Map
@@ -233,8 +271,7 @@ export default class Home extends Component {
           region={this.props.coordinate}
           showsUserLocation={true}
         >
-         {/*Drop markers on map*/
-        console.log(vendorLat)}
+         {/*Drop markers on map*/}
          {
               <MapView.Marker
                   coordinate={{
@@ -285,6 +322,13 @@ export default class Home extends Component {
                 <Text style={styles.bigBoldRedFont}>
                     {company}
                 </Text>
+                <Rating style = {styles.ratings}
+            
+                  startingValue = {ratingValue}
+                  readonly = {true}
+                  type = 'star'
+                  imageSize={40}
+                />
           </View>
           }
          
@@ -341,7 +385,7 @@ export default class Home extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-                this.props.navigation.navigate("UserEditProfile")
+                this.props.navigation.navigate("CreateReview")
             }
           />
           </View>
@@ -354,5 +398,6 @@ export default class Home extends Component {
 		  </View>
       </View>
     );
+        
   }
 };

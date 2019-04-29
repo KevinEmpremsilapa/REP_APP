@@ -8,10 +8,23 @@ const Colors = {
 
 export default StyleSheet.create({
   //new
+  ratings:{
+    alignSelf: "center",
+    paddingTop: 15
+  },
+  reviewForm:{
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+    //paddingTop: 360,
+    backgroundColor: "#FFF", 
+    alignSelf: "stretch"
+  },
   subtitleView: {
-    flexDirection: 'row',
+    //flexDirection: 'row',
     height: 50,
-    paddingLeft: 50,
+    paddingLeft: 15,
     paddingTop: 5
   },
   titleText: {

@@ -23,8 +23,7 @@ import {Header, Left, Right, Icon} from 'native-base';
 import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
-import {SearchBar, ListItem} from "react-native-elements";
-import geolib from "geolib";
+import {Rating, SearchBar, ListItem} from "react-native-elements";
 const win = Dimensions.get("window");
 
 // Images
@@ -33,7 +32,8 @@ import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80
 import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 import popsicleIcon from '../../assets/Images/popsicleLocator.png';
 import userIcon from '../../assets/Images/defaultUserIcon.png';
-global.vendorID = "w5IDMgq00pYaaGWucHnCBkx8zUy1";
+global.vendorID = "1rBfk986QLbSmwtN5nmvxo1uj522";
+global.ratingValue = 0;
 function getDistanceInMiles(lat1,lon1,lat2,lon2) { 
   var R = 6371; // Radius of the earth in km 
   var dLat = deg2rad(lat2-lat1); // deg2rad below 
@@ -56,13 +56,22 @@ export default class Home extends Component {
       error: null,
       name: " ",
       vendorList: {},
+      //vendorSelected: ""
     };
     this._isMounted = false;
   }
-
+  
   state = { currentUser: null };
 
   state = { moveToUserLocation: true };
+
+  onPush = (key, totalReviews, totalStars) =>
+{
+  global.vendorID = key;
+  global.ratingValue = totalStars/ totalReviews;
+  console.log("global rating"+ratingValue);
+  this.props.navigation.navigate("ViewVendorProfile");
+}
   _gotoCurrentLocation(e) {
     this.map.animateToRegion({
       latitude: this.state.latitude,
@@ -115,7 +124,7 @@ export default class Home extends Component {
       });
     });
 
-    let vendorRef = db.ref(`/vendors`).orderByChild("location/vendorLatitude");
+    let vendorRef = db.ref(`/vendors`).orderByChild("latitude").startAt(0);
     //this sets name to name
     vendorRef.once("value").then(snapshot => {
       this.setState({
@@ -149,9 +158,10 @@ export default class Home extends Component {
     const {vendorList} = this.state;
     var newVendorList = [];
     Object.keys(vendorList).forEach(function(key){
-      if(vendorList[key].location!== undefined)
-      {
-        if(vendorList[key].location.vendorLatitude!== null&&vendorList[key].location.vendorLongitude!== null)
+        if(vendorList[key].latitude!== null&&vendorList[key].longitude!== null&&vendorList[key].company!== null&&vendorList[key].city!== null&&vendorList[key].name!== null&&
+          vendorList[key].typeVendor!== null&&vendorList[key].phone!== null&&vendorList[key].daysOfOp!== null&&vendorList[key].hoursOfOp!== null&&
+          vendorList[key].latitude!== undefined&&vendorList[key].longitude!== undefined&&vendorList[key].company!== undefined&&vendorList[key].city!== undefined&&vendorList[key].name!== undefined&&
+          vendorList[key].typeVendor!== undefined&&vendorList[key].phone!== undefined&&vendorList[key].daysOfOp!== undefined&&vendorList[key].hoursOfOp!== undefined)
         {
             //var distance =  Math.sqrt((vendorList[key].location.vendorLatitude-this.state.latitude)*2+(vendorList[key].location.vendorLongitude-this.state.longitude)*2);
             var tempObj = {
@@ -164,15 +174,14 @@ export default class Home extends Component {
               typeVendor: vendorList[key].typeVendor,
               //daysOfOp:   vendorList[key].daysOfOp,
               //hoursOfOp:  vendorList[key].hoursOfOp,
-              location:   {
-                vendorLatitude: vendorList[key].location.vendorLatitude,
-                vendorLongitude: vendorList[key].location.vendorLongitude
-              },
+              latitude: vendorList[key].latitude,
+              longitude: vendorList[key].longitude,
+              numOfReviews: vendorList[key].numOfReviews,
+              numOfStars: vendorList[key].numOfStars
               //distance: distance
             };
             newVendorList.push(tempObj);
         }
-      }
       console.log(newVendorList);
     })
     return (
@@ -214,14 +223,17 @@ export default class Home extends Component {
               
               <MapView.Marker
                   coordinate={{
-                    latitude: l.location.vendorLatitude,
-                    longitude: l.location.vendorLongitude
+                    latitude: l.latitude,
+                    longitude: l.longitude
                   }}
                   key={i}
               >
               {/*global.vendorID= l.id*/}
                 <TouchableOpacity 
-                onPress={()=> this.props.navigation.navigate("ViewVendorProfile")}
+                onPress={
+                  //()=> this.props.navigation.navigate("ViewVendorProfile")
+                  () => this.onPush(l.id, l.numOfReviews, l.numOfStars)
+                }
                 >
                 <View style={styles.mapIconStyle}>
                   <Image source = {popsicleIcon} style={styles.locationIconSize} />
@@ -305,8 +317,14 @@ export default class Home extends Component {
                     }
                     subtitle={
                       <View style={styles.subtitleView}>
+                        <Rating 
+                          startingValue = {l.numOfStars/l.numOfReviews}
+                          readonly = {true}
+                          type = 'star'
+                          imageSize={20}
+                        />
                         <Text style={styles.subtitleText}>{l.typeVendor}</Text>
-                        <Text style={styles.distanceText}>{getDistanceInMiles(this.state.latitude,this.state.longitude,l.location.vendorLatitude,l.location.vendorLongitude)}mi</Text>
+                        <Text style={{ fontSize:12,color: 'grey'}}>{getDistanceInMiles(this.state.latitude,this.state.longitude,l.latitude,l.longitude)} mi</Text>
                       </View>
                     }
                     avatar={
@@ -314,9 +332,9 @@ export default class Home extends Component {
                         source={userIcon}
                         style={styles.mapIconStyle}
                       />}
-                    onPress={()=> this.props.navigation.navigate("ViewVendorProfile")}
+                    onPress={() => this.onPush(l.id, l.numOfReviews, l.numOfStars)}
                   >
-                  {/*global.vendorID= l.id*/}
+                  
                   </ListItem>
                 ))
               }

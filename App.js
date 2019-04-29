@@ -22,7 +22,7 @@ import VendorProfile from './Screens/VendorScreens/VendorProfile';
 import VendorEditProfile from './Screens/VendorScreens/VendorEditProfile';
 import VendorUser from './Screens/VendorUser';
 import ViewVendorProfile from './Screens/UserScreens/ViewVendorProfile';
-
+import CreateReview from './Screens/UserScreens/CreateReview';
 const repRed = '#FF6D6F';
 const repGray = '363636';
 
@@ -72,6 +72,7 @@ const Stack = {
     VendorEditProfile:  {screen: VendorEditProfile, navigationOptions: {header: null, gesturesEnabled: false}},
     VendorUser:         {screen: VendorUser,        navigationOptions: {header: null, gesturesEnabled: false}},
     ViewVendorProfile:  {screen: ViewVendorProfile, navigationOptions: {header: null, gesturesEnabled: false}},
+    CreateReview:       {screen: CreateReview,      navigationOptions: {header: null, gesturesEnabled: false}},
 };
  
 
