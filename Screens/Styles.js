@@ -7,6 +7,29 @@ const Colors = {
 }
 
 export default StyleSheet.create({
+  //new
+  subtitleView: {
+    flexDirection: 'row',
+    height: 50,
+    paddingLeft: 50,
+    paddingTop: 5
+  },
+  titleText: {
+    fontWeight: 'bold',
+    fontSize:20, 
+    paddingLeft: 15,
+    color: '#380e82'
+  },
+  distanceText: {
+    fontSize:15, 
+    //paddingLeft: 15,
+    color: 'black'
+  },
+  subtitleText: {
+    fontSize:15, 
+    //paddingLeft: 15,
+    color: 'black'
+  },
   // Sliding Drawer
   safeAreaStyle:{
     height:100,
@@ -39,14 +62,22 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   slidingPanelLayoutStyle: {
-    height: Dimensions.get('window').height,
+    paddingTop: 20,
+    height:  Dimensions.get('window').height ,//900,
     width: Dimensions.get('window').width,
-    backgroundColor: '#CD9BCC', 
-    justifyContent: 'center', 
-    alignItems: 'center'
+    backgroundColor: 'white',
+    //flex: 1, 
+  },
+  slidingPanelLayout3Style: {
+    height: 200,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+    alignItems:'center', 
+    paddingTop: 25
   },
   slidingPanelLayout2Style: {
-    height: Dimensions.get('window').height,
+    flex: 1,
+    height: Dimensions.get('window').height, // 100
     width: Dimensions.get('window').width,
     backgroundColor: 'white'
   },
@@ -134,7 +165,15 @@ export default StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 20
   },
-
+  shadow:{
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+    shadowRadius: 5,
+    shadowOpacity: 0.8,
+  },
 
   // Style Form
   formInput:{
@@ -161,10 +200,18 @@ export default StyleSheet.create({
     color: '#FFF'
   },
   bigBoldRedFont:{
+    paddingTop: 10,
     fontWeight: 'bold',
     fontSize: 28,
     textAlign: 'center',
     color: 'rgba(255,109,111, .8)'
+  },
+  medBoldRedFont:{
+    //paddingTop: 5,
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
+    color: 'rgba(255,109,111, 1)'
   },
 
   // Buttons
@@ -223,14 +270,12 @@ export default StyleSheet.create({
   compassPosition:{
     position: 'absolute',
     alignSelf: 'center',
-    top: 10,
+    top: 100,
+    paddingRight: 20,
   },
   hamburgerIconPosition:{
-    position: 'absolute',
-    paddingRight: 20,
-    top: 60,
-    right:0,
-    paddingBottom: 10,
+    paddingRight: 5,
+    marginTop: 6,
   },
   mapIconStyle:{
     height: 50,
@@ -238,13 +283,13 @@ export default StyleSheet.create({
   },
   locationIconPosition:{
     position: 'absolute',
-    paddingRight: 20,
-    top: 120,
+    paddingRight: 10,
+    bottom: 80,
     right:0,
   },
   mapIconStyle:{
-    height: 50,
-    width: 50,
+    height: 40,
+    width: 40,
   },
  locationIconSize:{
     flex: 1,
@@ -252,8 +297,21 @@ export default StyleSheet.create({
     height: null,
     resizeMode: 'contain'
   },
- 
-
+ mapSearchBar:{
+  position: 'absolute',
+  top: 10,
+  right: 0,
+  paddingRight: 10,
+ },
+mapTopNavBar:{
+  //flex: 1,
+  position: 'absolute',
+  alignSelf: 'center',
+  flexDirection: 'row',
+  alignItems: 'center',
+  top: 22,
+  paddingLeft: 10,
+},
   // Text Styles
   h1:{
     fontSize: 30,
@@ -276,7 +334,7 @@ sectionHeader: {
   paddingRight: 10,
   paddingBottom: 2,
   fontSize: 18,
-  fontWeight: 'bold'
+  fontWeight: 'bold',
 },
 item: {
   padding: 10,
@@ -309,10 +367,8 @@ Colors:
   #C06C84
   #6C5B7B
   #355C7D
-
   // Font Colors
   #363636
-
   // Grey
   #C7C7C7 rgba(199,199,199, .8)
  */
