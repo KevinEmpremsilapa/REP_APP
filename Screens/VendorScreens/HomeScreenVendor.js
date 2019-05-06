@@ -1,6 +1,6 @@
 //Home Screen Vendor
 import React, { Component } from "react";
-import MapView from "react-native-maps";
+import MapView, { AnimatedRegion } from "react-native-maps";
 import {
   Image,
   View,
@@ -13,6 +13,7 @@ import {
   Asyncstorage,
   ImageBackground,
 } from "react-native";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 // Import GUI
 import styles from "../Styles";
@@ -35,9 +36,11 @@ export default class HomeVendor extends Component {
     this.state = {
       latitude: null,
       longitude: null,
+      searchLatitude: null,
+      searchLongitude: null,
       error: null,
       name: " ",
-      isVendorLocationOn: false,
+      isVendorLocationOn: true, 
       isLocationFocused: true,
     };
   }
@@ -47,12 +50,18 @@ export default class HomeVendor extends Component {
   _handleVendorLocation = () =>{
     const { isVendorLocationOn } = this.state;
 
+    //Getting DB info
+    let currentUser = firebase.auth().currentUser;
+    let db = firebase.database();
+
     // If vendor location is ON
     if(isVendorLocationOn){
+      db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: isVendorLocationOn});
       this.setState({ isVendorLocationOn: false });
     }
     // If vendor location is OFF
     else{
+      db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: isVendorLocationOn});
       this.setState({ isVendorLocationOn: true });
     }
   }
@@ -80,7 +89,43 @@ export default class HomeVendor extends Component {
       latitudeDelta: 0.0059397161733585335,
       longitudeDelta: 0.005845874547958374,
     });
+
+    //CALLS SAVE LOCATION
+    this.SaveLocation(this.state.latitude,this.state.longitude);
   }
+  
+  // - - - GOTO SEARCH BAR LOCATION
+  _gotoSearchLocation(e){
+    this.map.animateToRegion({
+      latitude: this.state.searchLatitude,
+      longitude: this.state.searchLongitude,
+      latitudeDelta: 0.0059397161733585335,
+      longitudeDelta: 0.005845874547958374
+    });
+  }
+
+  //---------SAVES VENDOR LOCATION TO DATABASE---------//
+  SaveLocation (latitude, longitude){
+
+      let currentUser = firebase.auth().currentUser; //Gets Current UserID
+      let db = firebase.database();
+
+      //Update values from firebase database
+      db.ref(`/vendors/${currentUser.uid}`).update({latitude: latitude});
+      db.ref(`/vendors/${currentUser.uid}`).update({longitude: longitude});
+   };
+
+  //---------SET CURRENT LOCATION TO LOCAL COORDS ---------//
+  GetLocation(e)
+  {
+    navigator.geolocation.getCurrentPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+    });
+  }
+
 // find position of user using geolocation: longitute and lattitude
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(position => {
@@ -94,6 +139,16 @@ export default class HomeVendor extends Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
 
+    //--- WATCHES FOR CHANGE IN POSITION THEN UPDATES COORDS ---//
+    navigator.geolocation.watchPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+      this.SaveLocation(this.state.latitude,this.state.longitude);
+    });
+  
+
     // get values from firebase database
     let db = firebase.database();
 
@@ -101,6 +156,11 @@ export default class HomeVendor extends Component {
     // can get all user information by: /users/uid
     let ref = db.ref(`/vendors/${currentUser.uid}/name`);
 
+
+    //-------- Gets isVendorLocationOn From DB -------------//
+    db.ref(`/vendors/${currentUser.uid}`).update({isVendorLocationOn: this.state.isVendorLocationOn});
+    this._handleVendorLocation();
+   
     //get user info and display in alert box
     ref.on("value", function(snapshot) {
       const messageText = JSON.stringify(snapshot.val());
@@ -121,6 +181,7 @@ export default class HomeVendor extends Component {
     drawerIcon: ({})=>(
       <Icon name="md-home" style={{fontSize:24, color:'#4C2250'}}/>
     )
+    
   }
 
   render() {
@@ -150,7 +211,7 @@ export default class HomeVendor extends Component {
               this.props.userLocation.data.coords &&
               this.props.userLocation.data.coords.latitude 
             ) {
-              this._gotoCurrentLocation();
+              //this._gotoCurrentLocation();
               this.state.moveToUserLocation = false;
             }
           }}
@@ -176,19 +237,123 @@ export default class HomeVendor extends Component {
               <View style={styles.marker} />
             </View>
           </MapView.Marker>
+
+          {/* - - - SEARCH BAR MARKER - - - */}
+          <MapView.Marker
+              coordinate={{
+                latitude: this.state.searchLatitude,
+                longitude: this.state.searchLongitude,
+              }}
+            >
+              <View style={styles.mapIconStyle}>
+                    <Image
+                      source={pinkMarker}
+                      style={styles.locationIconSize}
+                    />
+                  </View>
+            </MapView.Marker>
+
          </MapView>
 
-         <View style={styles.hamburgerIconPosition}>
-              <TouchableOpacity
-                name="md-menu" 
-                onPress={()=> this.props.navigation.openDrawer()}
-              >
-                <Image 
-                  source={hamburgerMenuIcon}
-                  style={styles.mapIconStyle}
-                  />
-              </TouchableOpacity>
+         {/* - - - TOP NAVIGATION BAR - - - */}
+         <View style={styles.mapTopNavBar}>
+            
+            {/* - - - HAMBURGER MENU - - - */}
+            <TouchableOpacity
+              style={styles.hamburgerIconPosition}
+              name="md-menu"
+              onPress={() => this.props.navigation.openDrawer()}
+            >
+              <Image source={hamburgerMenuIcon} style={styles.mapIconStyle} />
+            </TouchableOpacity>
+
+            {/* - - - SEARCH BAR - - - */}
+            <GooglePlacesAutocomplete
+              placeholder="Search"
+              minLength={2} // minimum length of text to search
+              autoFocus={false}
+              returnKeyType={"search"} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+              listViewDisplayed="false" // true/false/undefined
+              fetchDetails={true}
+              renderDescription={row => row.description} // custom description render
+              onPress={(data, details = null) => {
+                // 'details' is provided when fetchDetails = true
+                this.setState({
+                  searchLatitude: details.geometry.location.lat,
+                  searchLongitude: details.geometry.location.lng,
+                  moveToUserLocation: true
+                });
+
+                this._gotoSearchLocation();
+                console.log(data, details);
+              }}
+              getDefaultValue={() => ""}
+              query={{
+                // available options: https://developers.google.com/places/web-service/autocomplete
+                key: "AIzaSyDMi41MlaJhmn2WG8LjG5DRlUdESHxoC9U",
+                language: "en", // language of the results
+                types: "" // default: 'geocode' (cities) - Putting nothing will search for everything
+              }}
+
+              styles={{
+                textInputContainer: {
+                  height: "100%",
+                  width: 280,
+                  backgroundColor: 'rgba(0,0,0, 0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth:0,
+                },
+                textInput: {
+                  width: '100%',
+                  height: '100%',
+                  height: 40,
+                  width: 280,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                },
+                description: {
+                  fontWeight: "bold"
+                },
+                predefinedPlacesDescription: {
+                  color: "#1faadb"
+                },
+                listView: {
+                  top: 40,
+                  position: 'absolute',
+                  width: 270,
+                  backgroundColor: 'white',
+                  marginBottom: 10,
+                },
+                row: {
+                  backgroundColor: 'white'
+                },
+              }}
+              //currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+              //currentLocationLabel="Current location"
+              nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+              GoogleReverseGeocodingQuery={
+                {
+                  // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                }
+              }
+              GooglePlacesSearchQuery={{
+                // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                rankby: "distance",
+                types: "food"
+              }}
+              filterReverseGeocodingByTypes={[
+                "locality",
+                "administrative_area_level_3"
+              ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+              //predefinedPlaces={[homePlace, workPlace]}
+              debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+              //renderLeftButton={()  => <Image source={require('path/custom/left-icon')} />}
+              //renderRightButton={() => ()}
+              />
+
           </View>
+        {/* - - - END TOP NAVIGATION BAR - - - */}
+
 
           <View style={styles.locationIconPosition}>
               <TouchableOpacity
@@ -207,12 +372,12 @@ export default class HomeVendor extends Component {
                   // VENDOR LOCATION BUTTON
                   styles={{alignSelf: 'center'}}
                   text={this.state.isVendorLocationOn ? 
-                    "Turn Off Location" : "Turn On Location"}
+                     "Turn Off Location" : "Turn On Location" }
                   textStyle={{ fontSize: 20, color: '#FFF'}}     
                   gradientBegin={this.state.isVendorLocationOn ? 
                     'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}
                   gradientEnd={this.state.isVendorLocationOn ? 
-                    'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
+                   'rgba(199,199,199, .8)' : 'rgba(255,109,111, .8)'}          
                   gradientDirection="diagonal"
                   height={50}
                   width={250} 
