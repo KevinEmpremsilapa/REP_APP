@@ -41,22 +41,25 @@ export default class Signup extends Component {
     super(props);
     this.state = {
       name: "",
+      company: "",
       phone: "",
       email: "",
       password: "",
       error: "",
       loading: false,
       hidePassword: true,
+      latitude: 118,
+      longitude: 34,//LA CORDINATES DEFAULT
+      isVendorLocationOn: false,
     };
   }
 
-  signUpUser = (email, password, name, phone) => {
+  signUpUser = (email, password, name, phone, company, laditude, longitude, isVendorLocationOn) => {
     try {
       if (this.state.password.length < 6) {
         alert("Enter a password that is 6 characters or longer");
         return;
       }
-
       //add user and user ID
       firebase
         .auth()
@@ -66,9 +69,15 @@ export default class Signup extends Component {
             .database()
             .ref("vendors/" + res.user.uid)
             .set({
+            //-----CREATING/SAVING DATA TO FIREBASE-----//
               email: email,
               name: name,
-              phone: phone
+              password: password,
+              phone: phone,
+              company: company,
+              latitude: latitude,
+              longitude: longitude,
+              isVendorLocationOn: isVendorLocationOn,
             });
         });
     } catch (error) {
@@ -81,12 +90,26 @@ export default class Signup extends Component {
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
           <View style={styles.form}>
+
+          <Text style={styles.bigBoldWhiteFont}>
+            VENDOR SIGNUP
+          </Text>
+
           <Item 
             rounded
             style={styles.formInput}>
             <Input 
               placeholder = "Full Name"
               onChangeText={name => this.setState({ name })} />
+          </Item>
+
+          
+          <Item 
+            rounded
+            style={styles.formInput}>
+            <Input 
+              placeholder = "Company Name"
+              onChangeText={company => this.setState({ company })} />
           </Item>
 
           <Item 
@@ -140,7 +163,12 @@ export default class Signup extends Component {
               this.state.email,
               this.state.password,
               this.state.name,
-              this.state.phone
+              this.state.phone,
+              this.state.company,
+              this.state.laditude, 
+              this.state.longitude,
+              this.state.isVendorLocationOn,
+              this.props.navigation.navigate("MainScreen")
             )}
             />
           </View>
