@@ -37,32 +37,104 @@ export default class UserProfile extends Component {
       name: "",
       phone: "",
       email: "",
+      gender: "",
+      age: "",
+      bio: "",
     };
   }
 
-  editUser = (email, name, phone) => {
-     try {
-     if (this.state.password.length < 6) {
-       alert("Enter a password that is 6 characters or longer");
-       return;
-      }
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+      this._gotoCurrentLocation();
+    });
 
-         //Update email name and phone in firebase
-         firebase
-           .database()
-           .ref("users/" + res.user.uid)
-           .set({
-             email: email,
-             name: name,
-             phone: phone
-           });
+    const { currentUser } = firebase.auth();
+    this.setState({ currentUser });
 
-      } catch (error) {
-     console.log(error.toString());
-      }
-   };
+    // get values from firebase database
+    let db = firebase.database();
+
+    // only works for specific user name when /users/UID/name
+    // can get all user information by: /users/uid
+    
+    //get phone
+    let phoneRef = db.ref(`/users/${currentUser.uid}/phone`);
+    //set phone number from database to the phone variable
+    phoneRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        phone: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z0-9 ]/g, "")
+      });
+    });
+    
+   //get NAme
+    let nameRef = db.ref(`/users/${currentUser.uid}/name`);
+    //this sets name to name
+    nameRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        name: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
+      });
+    });
+
+    //GET EMAIL
+    let emailRef = db.ref(`/users/${currentUser.uid}/email`);
+    //this sets name to name
+    emailRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        email: JSON.stringify(snapshot.val())
+      });
+    });
+
+    
+    //GET GENDER
+    let genderRef = db.ref(`/users/${currentUser.uid}/gender`);
+    //this sets name to name
+    genderRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        gender: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
+      });
+    });
+
+    
+    //GET AGE
+    let ageRef = db.ref(`/users/${currentUser.uid}/age`);
+    //this sets name to name
+    ageRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        age: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z0-9 ]/g, "")
+      });
+    });
+
+    
+    //GET BIO
+    let bioRef = db.ref(`/users/${currentUser.uid}/bio`);
+    //this sets name to name
+    bioRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        bio: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z0-9 ]/g, "")
+      });
+    });
+  }
+
 
   render() {
+    
+    const {phone} = this.state
+    const {name} = this.state
+    const {email} = this.state
+    const {gender} = this.state
+    const {age} = this.state
+    const {bio} = this.state
+
     return (
         <Form style={{backgroundColor: "#FFF", flex: 1}}>
         <View>
@@ -72,13 +144,44 @@ export default class UserProfile extends Component {
           </Text>
 
           <FormLabel>Name</FormLabel>
-          <FormInput/>
+          <FormInput
+          placeholder = {name}
+          placeholderTextColor="black"
+          disabled = {true}
+          editable = {false}
+          />
 
           <FormLabel>Phone</FormLabel>
-          <FormInput/>
+          <FormInput
+          placeholder = {phone}
+          placeholderTextColor="black"
+          disabled = {true}
+          editable = {false}
+          />
 
-          <FormLabel>Email</FormLabel>
-          <FormInput/>
+          <FormLabel>Gender</FormLabel>
+          <FormInput
+          placeholder = {gender}
+          placeholderTextColor="black"
+          disabled = {true}
+          editable = {false}
+          />
+
+          <FormLabel>Age</FormLabel>
+          <FormInput
+          placeholder = {age}
+          placeholderTextColor="black"
+          disabled = {true}
+          editable = {false}
+          />
+
+          <FormLabel>Bio</FormLabel>
+          <FormInput
+          placeholder = {bio}
+          placeholderTextColor="black"
+          disabled = {true}
+          editable = {false}
+          />
 
 
           {/*
@@ -109,7 +212,7 @@ export default class UserProfile extends Component {
 
           <View style ={styles.buttonContainer}>
           <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'left' }}
+            style={{ marginVertical: 8, marginTop: 10 }}
             text="Edit Profile"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
@@ -123,7 +226,7 @@ export default class UserProfile extends Component {
             }
           />
           <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'right' }}
+            style={{ marginVertical: 8, marginTop: 10 }}
             text="Cancel"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"

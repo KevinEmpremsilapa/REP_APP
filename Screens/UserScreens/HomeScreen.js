@@ -4,31 +4,36 @@ JS Changes
   - Search bar reads input
 */
 import React, { Component } from "react";
+import Search from 'react-native-search-box';
 import MapView from "react-native-maps";
 import {
-  Keyboard,
   Image,
   View,
   Text,
   Button,
-  Asyncstorage,
   Dimensions,
   TouchableOpacity,
   TextInput,
-  StyleSheet
-} from "react-native";
+  StyleSheet,
+  Asyncstorage,
+  ImageBackground,
+  SectionList
+ } from "react-native";
 import {Header, Left, Right, Icon} from 'native-base';
 import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
-import {SearchBar} from "react-native-elements";
+import {SearchBar, ListItem} from "react-native-elements";
+//import geolib from "geolib";
 const win = Dimensions.get("window");
 
 // Images
 import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
 import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
 import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
-
+import popsicleIcon from '../../assets/Images/popsicleLocator.png';
+import userIcon from '../../assets/Images/defaultUserIcon.png';
+global.vendorID = "w5IDMgq00pYaaGWucHnCBkx8zUy1";
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +42,7 @@ export default class Home extends Component {
       longitude: null,
       error: null,
       name: " ",
+      vendorList: {},
     };
     this._isMounted = false;
   }
@@ -52,6 +58,19 @@ export default class Home extends Component {
       longitudeDelta: 0.005845874547958374
     });
   }
+  /*
+  getDistance(vLat, vLong)
+  {
+    console.log("in getdistance");
+    var meterDistance = geolib.getDistance(
+      {latitude: vLat, longitude: vLong},
+      {latitude: this.state.latitude, longitude: this.state.longitude}
+    );
+    console.log(meterDistance);
+    var mileDistance = geolib.convertUnit('mi',meterDistance,2);
+    console.log(mileDistance);
+    return mileDistance;
+  }*/
 
   componentDidMount() {
     this._isMounted =true;
@@ -61,6 +80,7 @@ export default class Home extends Component {
       this.setState({ latitude: lat });
       this.setState({ longitude: long });
       this._gotoCurrentLocation();
+      /*
       this.keyboardDidShowListener = Keyboard.addListener(
         'keyboardDidShow',
         this._keyboardDidShow,
@@ -68,7 +88,7 @@ export default class Home extends Component {
       this.keyboardDidHideListener = Keyboard.addListener(
         'keyboardDidHide',
         this._keyboardDidHide,
-      );
+      );*/
     });
 
     const { currentUser } = firebase.auth();
@@ -84,7 +104,7 @@ export default class Home extends Component {
     //get user info and display in alert box
     ref.on("value", function(snapshot) {
       const messageText = JSON.stringify(snapshot.val());
-      alert(messageText + "Logged In");
+      //alert(messageText + "Logged In");
     });
 
     //this sets name to name
@@ -94,21 +114,25 @@ export default class Home extends Component {
         name: JSON.stringify(snapshot.val()).replace(/[^a-zA-Z ]/g, "")
       });
     });
-  }
 
-  componentWillUnmount()
-  {
-    this._isMounted = false;
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
+    let vendorRef = db.ref(`/vendors`).orderByChild("location/vendorLatitude");
+    //this sets name to name
+    vendorRef.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        vendorList: snapshot.val()
+        
+      });
+    });
   }
-
+/*
+  
   static navigationOptions = {
     header: null,
     drawerIcon: ({})=>(
       <Icon name="md-home" style={styles.drawerIcon}/>
     )
-  }
+  }*/
 
   // Search bar setup
   state = {search: '',};
@@ -122,7 +146,35 @@ export default class Home extends Component {
     const { name } = this.state;
     const { currentUser } = this.state;
     const { search } = this.state;
-
+    const {vendorList} = this.state;
+    var newVendorList = [];
+    Object.keys(vendorList).forEach(function(key){
+      if(vendorList[key].location!== undefined)
+      {
+        if(vendorList[key].location.vendorLatitude!== null&&vendorList[key].location.vendorLongitude!== null)
+        {
+            //var distance =  Math.sqrt((vendorList[key].location.vendorLatitude-this.state.latitude)*2+(vendorList[key].location.vendorLongitude-this.state.longitude)*2);
+            var tempObj = {
+              id:         key,
+              //name:       vendorList[key].name,
+              company:    vendorList[key].company,
+              //email:      vendorList[key].email,
+              //phone:      vendorList[key].phone,
+              city:       vendorList[key].city,
+              typeVendor: vendorList[key].typeVendor,
+              //daysOfOp:   vendorList[key].daysOfOp,
+              //hoursOfOp:  vendorList[key].hoursOfOp,
+              location:   {
+                vendorLatitude: vendorList[key].location.vendorLatitude,
+                vendorLongitude: vendorList[key].location.vendorLongitude
+              },
+              //distance: distance
+            };
+            newVendorList.push(tempObj);
+        }
+      }
+      console.log(newVendorList);
+    })
     return (
       //SearchBar
       //Map
@@ -156,17 +208,30 @@ export default class Home extends Component {
           region={this.props.coordinate}
           showsUserLocation={true}
         >
-         {/*FAKE PERSON*/}
-          <MapView.Marker
-            coordinate={{
-              latitude: 37.78825,
-              longitude: -122.4324
-            }}
-          >
-            <View style={{ width: 50, height: 50 }}>
-            <Image source = {require('../../assets/Images/ice-cream.png')} style={{ width: 50, height: 50 }}/>
-            </View>
-          </MapView.Marker>
+         {/*Drop markers on map*/}
+         {
+            newVendorList.map((l, i) => (
+              
+              <MapView.Marker
+                  coordinate={{
+                    latitude: l.location.vendorLatitude,
+                    longitude: l.location.vendorLongitude
+                  }}
+                  key={i}
+              >
+              {/*global.vendorID= l.id*/}
+                <TouchableOpacity 
+                onPress={()=> this.props.navigation.navigate("ViewVendorProfile")}
+                >
+                <View style={styles.mapIconStyle}>
+                  <Image source = {popsicleIcon} style={styles.locationIconSize} />
+                </View>
+                </TouchableOpacity>
+                
+              </MapView.Marker>
+            ))
+         }
+          
         </MapView>
         
         {/* - - - ICONS: Hamburger, GoToLocation - - - */}
@@ -196,14 +261,12 @@ export default class Home extends Component {
 
         {/* - - - SLIDING PANEL - - - */}
         <SlidingPanel
-          headerLayoutHeight = {win.height - 550}
+          //allowDragging = {false}
+          headerLayoutHeight = {100}
           headerLayout = {() =>
-          <View style={styles.slidingPanelLayout2Style}> 
-            <Text
-              style ={styles.h2}>
-              {"\n\t"} Find a Vendor Near You! {currentUser && currentUser.name}
-            </Text>
-            
+          <View style={styles.slidingPanelLayoutStyle}> 
+
+            {/*}
             <SearchBar
               platform = "default"
               placeholder = "Search Location"
@@ -216,21 +279,50 @@ export default class Home extends Component {
               onChangeText = {this.updateSearch }
               value = {search}
             />
+          */}
 
+          <Search 
+           backgroundColor = "rgba(255,109,111, .8)"
+           placeholderTextColor = "rgba(255,109,111, .8)"
+           //placeholder = "Search"
+          /> 
+            </View>
+          } 
+          slidingPanelLayout = {() =>
+          <View style={styles.slidingPanelLayout2Style}> 
+            {/*
             <Text
               style ={{fontSize: 26, fontWeight: "bold", alignSelf: "center"}}>
-              {"\n\t"} YOUR AD HERE! {currentUser && currentUser.name}
+              {"\n\t"} YOUR AD HERE! $500 {currentUser && currentUser.name}
             </Text>
-          
+            */}
+              {
+                newVendorList.map((l, i) => (
+                  <ListItem
+                    key={i}
+                    title={
+                      <Text style={styles.titleText}>{l.company}</Text>
+                    }
+                    subtitle={
+                      <View style={styles.subtitleView}>
+                        <Text style={styles.subtitleText}>{l.typeVendor}</Text>
+                        <Text style={styles.subtitleText}>{}</Text>
+                      </View>
+                    }
+                    avatar={
+                      <Image 
+                  source={userIcon}
+                  style={styles.mapIconStyle}
+                    />}
+                    onPress={()=> this.props.navigation.navigate("ViewVendorProfile")}
+                  >
+                  {/*global.vendorID= l.id*/}
+                  </ListItem>
+                ))
+              }
+
           </View>
           } 
-          /*
-          slidingPanelLayout = {() =>
-            <View style={{backgroundColor: 'white', width: win.width, height: win.height}}>
-              <Text>Email  </Text>
-              <Text>User Id </Text>
-            </View>
-          }*/
         />
         
 		  </View>
@@ -238,3 +330,14 @@ export default class Home extends Component {
     );
   }
 };
+/*
+              id:         key,
+              name:       vendorList[key].name,
+              company:    vendorList[key].company,
+              email:      vendorList[key].email,
+              phone:      vendorList[key].phone,
+              city:       vendorList[key].city,
+              typeVendor: vendorList[key].typeVendor,
+              daysOfOp:   vendorList[key].daysOfOp,
+              hoursOfOp:  vendorList[key].hoursOfOp,
+              */
