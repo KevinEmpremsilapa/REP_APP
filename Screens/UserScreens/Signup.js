@@ -46,13 +46,16 @@ export default class Signup extends Component {
       phone: "",
       email: "",
       password: "",
+      gender: "",
+      age: "",
+      bio: "",
       error: "",
       loading: false,
       hidePassword: true,
     };
   }
 
-  signUpUser = (email, password, name, phone) => {
+  signUpUser = (email, password, name, phone, gender, age, bio) => {
     try {
       if (this.state.password.length < 6) {
         alert("Enter a password that is 6 characters or longer");
@@ -70,7 +73,10 @@ export default class Signup extends Component {
             .set({
               email: email,
               name: name,
-              phone: phone
+              phone: phone,
+              gender: gender,
+              age: age,
+              bio: bio
             });
         });
     } catch (error) {
@@ -83,6 +89,11 @@ export default class Signup extends Component {
       <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
         <Form>
         <View style={styles.form}>
+
+          <Text style={styles.bigBoldWhiteFont}>
+            USER SIGNUP
+          </Text>
+
           <Item 
                 rounded
                 style={styles.formInput}>
@@ -142,7 +153,10 @@ export default class Signup extends Component {
               this.state.email,
               this.state.password,
               this.state.name,
-              this.state.phone
+              this.state.phone,
+              this.state.gender,
+              this.state.age,
+              this.state.bio
             )}
           />
           </View>

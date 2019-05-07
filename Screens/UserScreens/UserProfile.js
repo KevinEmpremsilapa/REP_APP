@@ -1,9 +1,9 @@
 //User Edit Profile Screen
 import React, { Component } from "react";
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import * as firebase from "firebase";
 import GradientButton from 'react-native-gradient-buttons';
 import gradientBG from '../../assets/Images/gradientBG.png';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import styles from "../Styles";
 
 import {
@@ -28,11 +28,8 @@ import {
   Label
 } from "native-base";
 
-export default class UserEditProfile extends Component {
+export default class UserProfile extends Component {
 
-  static navigationOptions = {
-    title: "Edit Profile"
-  };
 
   constructor(props) {
     super(props);
@@ -47,6 +44,13 @@ export default class UserEditProfile extends Component {
   }
 
   componentDidMount() {
+    navigator.geolocation.getCurrentPosition(position => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      this.setState({ latitude: lat });
+      this.setState({ longitude: long });
+      this._gotoCurrentLocation();
+    });
 
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
@@ -87,6 +91,7 @@ export default class UserEditProfile extends Component {
       });
     });
 
+    
     //GET GENDER
     let genderRef = db.ref(`/users/${currentUser.uid}/gender`);
     //this sets name to name
@@ -121,34 +126,8 @@ export default class UserEditProfile extends Component {
   }
 
 
-  editUser = (email, name, phone, gender, age, bio) => {
-    const { currentUser } = firebase.auth();
-    this.setState({ currentUser });
-
-
-    //get values from firebase database
-    let db = firebase.database();
-    let ref = db.ref(`/users/${currentUser.uid}/`);
-
-   try {
- 
-       //Update email name and phone in firebase
-       ref.set({
-           email: email,
-           name: name,
-           phone: phone,
-           gender: gender,
-           age: age,
-           bio: bio
-         });
-
-    } catch (error) {
-   console.log(error.toString());
-    }
-   };
-
   render() {
-
+    
     const {phone} = this.state
     const {name} = this.state
     const {email} = this.state
@@ -157,53 +136,51 @@ export default class UserEditProfile extends Component {
     const {bio} = this.state
 
     return (
-      //this.getUserInfo();
-
-     // <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
-          <Form style={{backgroundColor: "#FFF", flex: 1}}>
-             <View>
-
+        <Form style={{backgroundColor: "#FFF", flex: 1}}>
+        <View>
 
           <Text style={styles.bigBoldRedFont}>
-            EDIT PROFILE
+            MY PROFILE
           </Text>
 
           <FormLabel>Name</FormLabel>
           <FormInput
           placeholder = {name}
-          onChangeText={name => this.setState({ name })}/>
+          disabled = {true}
+          editable = {false}
           />
 
           <FormLabel>Phone</FormLabel>
           <FormInput
           placeholder = {phone}
-          onChangeText={phone => this.setState({ phone })}/>
+          disabled = {true}
+          editable = {false}
           />
 
           <FormLabel>Gender</FormLabel>
           <FormInput
           placeholder = {gender}
-          onChangeText={gender => this.setState({ gender })}/>
+          disabled = {true}
+          editable = {false}
           />
 
           <FormLabel>Age</FormLabel>
           <FormInput
           placeholder = {age}
-          onChangeText={age => this.setState({ age })}/>
+          disabled = {true}
+          editable = {false}
           />
 
           <FormLabel>Bio</FormLabel>
           <FormInput
           placeholder = {bio}
-          onChangeText={bio => this.setState({ bio })}/>
+          disabled = {true}
+          editable = {false}
           />
 
-          {/*}
-          <Text style={styles.bigBoldWhiteFont}>
-            EDIT PROFILE
-          </Text>
 
-          <Item 
+          {/*
+          <Item
                 rounded
                 style={styles.formInput}>
             <Input 
@@ -226,12 +203,12 @@ export default class UserEditProfile extends Component {
               placeholder = "Email" 
               onChangeText={email => this.setState({ email })} />
           </Item>
-    */}
+          */}
 
-          <View style = {styles.buttonContainer}>
+          <View style ={styles.buttonContainer}>
           <GradientButton
             style={{ marginVertical: 8, marginTop: 10 }}
-            text="Save Changes"
+            text="Edit Profile"
             textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
             gradientBegin="#FFF"
             gradientEnd="#FFF"           
@@ -240,17 +217,9 @@ export default class UserEditProfile extends Component {
             width={150}
             radius={50}             
             onPressAction={() =>
-              this.editUser(
-              this.state.email,
-              this.state.name,
-              this.state.phone,
-              this.state.gender,
-              this.state.age,
-              this.state.bio,
-              this.props.navigation.navigate("HomeScreen")
-            )}
+                this.props.navigation.navigate("UserEditProfile")
+            }
           />
-
           <GradientButton
             style={{ marginVertical: 8, marginTop: 10 }}
             text="Cancel"
@@ -266,12 +235,10 @@ export default class UserEditProfile extends Component {
             }
           />
           </View>
-          
-          </View>
-          
-        </Form>
 
-      //</ImageBackground>
+
+          </View> 
+        </Form>
     );
   }
 }
