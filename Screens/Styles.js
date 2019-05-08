@@ -8,22 +8,91 @@ const Colors = {
 
 export default StyleSheet.create({
   //new
+  reviewDate:{
+    flex: 1,
+    flexDirection: 'row',
+  },
+  bigBoldRedTitle:{
+    paddingTop: 90,
+    paddingBottom:10,
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
+  },
+  buttonContainerReview: {
+    flex: 1,
+    flexDirection: 'row',
+    marginBottom: 36
+  },
+  viewVendorPanel: {
+    height: Dimensions.get('window').height-100,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  reviewsPanel: {
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+    flex:1
+  },
+  tabView: { 
+    width:  550, 
+    height:  500, 
+    backgroundColor:  'white' 
+  },
+  formView:
+  {
+    height: Dimensions.get('window').height-200,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white'
+  },
+  listReviewView: {
+    height: Dimensions.get('window').height-275,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white'
+  },
+  reviewView: {
+    flexDirection: 'row',
+    height: 25,
+  },
+  reviewHomeFont:{
+    fontSize: 15,
+    color: 'gray'
+  },
+  reviewFont:{
+    fontSize: 15,
+    paddingTop: 10,
+    paddingBottom:10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
+  },
   ratings:{
     alignSelf: "center",
-    paddingTop: 15
+    paddingTop: 15,
+    paddingBottom: 10
   },
   reviewForm:{
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
     alignItems: 'center',
-    //paddingTop: 360,
     backgroundColor: "#FFF", 
     alignSelf: "stretch"
   },
   subtitleView: {
-    //flexDirection: 'row',
-    height: 50,
+    //height: 60,
     paddingLeft: 15,
     paddingTop: 5
   },
@@ -35,12 +104,10 @@ export default StyleSheet.create({
   },
   distanceText: {
     fontSize:15, 
-    //paddingLeft: 15,
     color: 'black'
   },
   subtitleText: {
     fontSize:15, 
-    //paddingLeft: 15,
     color: 'black'
   },
   // Sliding Drawer

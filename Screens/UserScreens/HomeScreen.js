@@ -278,36 +278,29 @@ export default class Home extends Component {
           headerLayout = {() =>
           <View style={styles.slidingPanelLayoutStyle}> 
 
-            {/*}
-            <SearchBar
-              platform = "default"
-              placeholder = "Search Location"
-              round
-              lightTheme
-              //showLoading
-              containerStyle={styles.searchBarContainer}
-              cancelButtonTitle
-              
-              onChangeText = {this.updateSearch }
-              value = {search}
-            />
-          */}
+              {/*<TouchableOpacity
+                name="md-menu" 
+                onPress={()=> this.filter(newVendorList,"Elotes")}
+              >
+                <Image 
+                  source={popsicleIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>*/}
+              <Text style={{ 
+                  paddingTop: 50,
+                  fontWeight: 'bold',
+                  fontSize: 30,
+                  textAlign: 'center',
+                  color: 'rgba(255,109,111, .8)'
+                }}>
+                   Vendors Near You
+                </Text>
 
-          <Search 
-           backgroundColor = "rgba(255,109,111, .8)"
-           placeholderTextColor = "rgba(255,109,111, .8)"
-           //placeholder = "Search"
-          /> 
             </View>
           } 
           slidingPanelLayout = {() =>
           <View style={styles.slidingPanelLayout2Style}> 
-            {/*
-            <Text
-              style ={{fontSize: 26, fontWeight: "bold", alignSelf: "center"}}>
-              {"\n\t"} YOUR AD HERE! $500 {currentUser && currentUser.name}
-            </Text>
-            */}
               {
                 newVendorList.map((l, i) => (
                   <ListItem
@@ -317,12 +310,15 @@ export default class Home extends Component {
                     }
                     subtitle={
                       <View style={styles.subtitleView}>
-                        <Rating 
-                          startingValue = {l.numOfStars/l.numOfReviews}
-                          readonly = {true}
-                          type = 'star'
-                          imageSize={20}
-                        />
+                        <View style={styles.reviewView}>
+                          <Rating 
+                            startingValue = {l.numOfStars/l.numOfReviews}
+                            readonly = {true}
+                            type = 'star'
+                            imageSize={20}
+                          />
+                          <Text style={styles.reviewHomeFont}>  {l.numOfReviews} Reviews</Text>
+                        </View>
                         <Text style={styles.subtitleText}>{l.typeVendor}</Text>
                         <Text style={{ fontSize:12,color: 'grey'}}>{getDistanceInMiles(this.state.latitude,this.state.longitude,l.latitude,l.longitude)} mi</Text>
                       </View>
@@ -348,14 +344,3 @@ export default class Home extends Component {
     );
   }
 };
-/*
-              id:         key,
-              name:       vendorList[key].name,
-              company:    vendorList[key].company,
-              email:      vendorList[key].email,
-              phone:      vendorList[key].phone,
-              city:       vendorList[key].city,
-              typeVendor: vendorList[key].typeVendor,
-              daysOfOp:   vendorList[key].daysOfOp,
-              hoursOfOp:  vendorList[key].hoursOfOp,
-              */

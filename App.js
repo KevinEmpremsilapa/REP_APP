@@ -23,6 +23,8 @@ import VendorEditProfile from './Screens/VendorScreens/VendorEditProfile';
 import VendorUser from './Screens/VendorUser';
 import ViewVendorProfile from './Screens/UserScreens/ViewVendorProfile';
 import CreateReview from './Screens/UserScreens/CreateReview';
+import UserReviews from './Screens/UserScreens/UserReviews';
+import VendorReviews from './Screens/VendorScreens/VendorReviews';
 const repRed = '#FF6D6F';
 const repGray = '363636';
 
@@ -36,9 +38,9 @@ export default class App extends React.Component{
 function getScreens(item)
 {
     //Main.isVendor
-    if(isVendor === false && (item.key ==='Logout' || item.key ==='User Home' || item.key === 'User Profile'))
+    if(isVendor === false && (item.key ==='Logout' || item.key ==='User Home' || item.key === 'User Profile' || item.key === 'User Reviews'))
         return true;
-    else if(isVendor === true && (item.key ==='Logout' || item.key ==='Vendor Home' || item.key === 'Vendor Profile'))
+    else if(isVendor === true && (item.key ==='Logout' || item.key ==='Vendor Home' || item.key === 'Vendor Profile' || item.key === 'Vendor Reviews'))
         return true;
     else
         return false;
@@ -73,6 +75,8 @@ const Stack = {
     VendorUser:         {screen: VendorUser,        navigationOptions: {header: null, gesturesEnabled: false}},
     ViewVendorProfile:  {screen: ViewVendorProfile, navigationOptions: {header: null, gesturesEnabled: false}},
     CreateReview:       {screen: CreateReview,      navigationOptions: {header: null, gesturesEnabled: false}},
+    VendorReviews:      {screen: VendorReviews,     navigationOptions: {header: null, gesturesEnabled: false}},
+    UserReviews:        {screen: UserReviews,       navigationOptions: {header: null, gesturesEnabled: true}},
 };
  
 
@@ -101,6 +105,14 @@ const drawerRoutes = {
             drawerLockMode: 'locked-closed',
         },
     },
+    'User Reviews': {
+        name: 'User Reviews',
+        screen: createStackNavigator(Stack, {initialRouteName: 'UserReviews'}),
+        navigationOptions:{
+            drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
+        },
+    },
     'Vendor Home': {
         name: 'Vendor Home',
         screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreenVendor'}),
@@ -117,7 +129,14 @@ const drawerRoutes = {
             drawerLockMode: 'locked-closed',
         },
     },
-    
+    'Vendor Reviews': {
+        name: 'Vendor Reviews',
+        screen: createStackNavigator(Stack, {initialRouteName: 'VendorReviews'}),
+        navigationOptions:{
+            drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
+        },
+    },
    
 };//creates paths for the drawer navigator using the stack navigation
 const RootNavigator = createStackNavigator({

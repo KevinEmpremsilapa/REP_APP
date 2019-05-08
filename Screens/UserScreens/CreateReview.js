@@ -1,4 +1,7 @@
 //Sign up Vendor Screen
+//import Rater from 'react-rater'
+//import 'react-rater/lib/react-rater.css'
+
 import React, { Component } from "react";
 import GradientButton from 'react-native-gradient-buttons';
 import gradientBG from '../../assets/Images/gradientBG.png';
@@ -28,8 +31,17 @@ import {
   Textarea
 } from "native-base";
 import {Rating} from "react-native-elements";
+var today = new Date();
+var todayDay = today.getDay().toString();
+var todayMonth = today.getMonth().toString();
+var todayYear = today.getFullYear().toString();
+if(todayDay.length <2)
+todayDay = "0"+todayDay;
+if(todayMonth.length <2)
+todayMonth = "0"+todayMonth;
+var todayFormatted = todayDay+"-"+todayMonth+"-"+todayYear;
 export default class CreateReview extends Component {
-
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -61,7 +73,8 @@ export default class CreateReview extends Component {
         "description": description,
         "rating": rating,
         "vendorID": vendorID,
-        "userID": currentUser.uid
+        "userID": currentUser.uid,
+        "date": todayFormatted
         })
           
       vendorRef.update({
@@ -100,71 +113,76 @@ export default class CreateReview extends Component {
   render() {
     //this.fetchVendorInfo;
     return (
-      <View style = {styles.reviewForm}>
-     
-        <Form>
-          {/*<View style={styles.reviewForm}>*/}
-<View>
-          <Text style={styles.bigBoldRedFont}>
+      /*<View style = {styles.reviewForm}>flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+    //paddingTop: 360,
+    backgroundColor: "#FFF", 
+    alignSelf: "stretch"*/
+      <View style={{backgroundColor: "#FFF", flex: 1, alignItems: 'center'}}>
+          <Text style={styles.bigBoldRedTitle}>
             Create Review
           </Text>
           <Rating style={styles.ratings}
-                          startingValue = {3}
+                          startingValue = {0}
                           type = 'star'
+                          startingValue = {0}
                           imageSize={40}
-                          minValue ={1}
+                          ratingCount={5}
+                          //minValue ={0}
                           onFinishRating = {stars => this.setState({stars})}
           />
-         
-          <Item>
-            <Input 
+
+            <TextInput 
+              style = {{width:300, height:50}}
               placeholder = "Title"
               onChangeText={title => this.setState({ title })}
                />
-          </Item>
 
-          
-          {/*<Item stackedLabel>*/}
-            <Textarea
-              rowSpan={10} 
+            <TextInput
+              //style = {{height: 50}}
+              //rowSpan={10} 
+              style = {{width:300, height:300}}
               placeholder = "Description"
+              multiline={true}
               onChangeText={description => this.setState({ description })} 
               />
-          {/*<View style = {styles.buttonContainer}>*/}
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
-            text="Submit"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={260}
-            radius={50}             
-            onPressAction={() =>
-              this.addReview(
-              this.state.title,
-              this.state.description,
-              this.state.stars
-            )}
-            />
-            <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
-            text="Cancel"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={150}
-            radius={50}             
-            onPressAction={() =>
-               this.props.navigation.navigate("HomeScreen")
-            }
-          />
-          </View>
-        </Form>
+          <View style = {styles.buttonContainer}>
+      <GradientButton
+        style={{ marginVertical: 5, marginTop: 15}}
+        text="Submit"
+        textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+        gradientBegin="#FFF"
+        gradientEnd="#FFF"           
+        gradientDirection="diagonal"
+        height={50}
+        width={260}
+        radius={50}             
+        onPressAction={() =>
+          this.addReview(
+          this.state.title,
+          this.state.description,
+          this.state.stars
+        )}
+        />
+        <GradientButton
+        style={{ marginVertical: 5, marginTop: 15}}
+        text="Cancel"
+        textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+        gradientBegin="#FFF"
+        gradientEnd="#FFF"           
+        gradientDirection="diagonal"
+        height={50}
+        width={150}
+        radius={50}             
+        onPressAction={() =>
+           this.props.navigation.navigate("HomeScreen")
+        }
+      />
       </View>
+      </View>
+
     );
   }
 }

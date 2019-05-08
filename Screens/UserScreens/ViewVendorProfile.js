@@ -4,6 +4,7 @@ JS Changes
   - Search bar reads input
 */
 import React, { Component } from "react";
+import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import Search from 'react-native-search-box';
 import MapView from "react-native-maps";
 import {
@@ -17,9 +18,10 @@ import {
   StyleSheet,
   Asyncstorage,
   ImageBackground,
-  SectionList
+  SectionList,
+  ScrollView
  } from "react-native";
-import {Header, Left, Right, Icon,Form,} from 'native-base';
+import {Thumbnail, List, Separator,Header, Left, Right, Icon,Form,} from 'native-base';
 import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
@@ -33,8 +35,8 @@ import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opa
 import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
 import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 import popsicleIcon from '../../assets/Images/popsicleLocator.png';
+import {Collapse,CollapseHeader, CollapseBody, AccordionList} from 'accordion-collapse-react-native';
 
-//global.vendorID = "1rBfk986QLbSmwtN5nmvxo1uj522";
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -51,7 +53,9 @@ export default class Home extends Component {
         vendorLong: -118.392,
         numOfReviews: 0,
         numOfStars: 0,
-        ratingNum:0
+        ratingNum:0,
+        reviewList: {},
+        page:'first'
     };
     this._isMounted = false;
   }
@@ -59,6 +63,7 @@ export default class Home extends Component {
   state = { currentUser: null };
 
   state = { moveToUserLocation: true };
+
   _gotoCurrentLocation(e) {
     this.map.animateToRegion({
       latitude: this.state.latitude,
@@ -188,7 +193,7 @@ export default class Home extends Component {
         });
       }
     });
-/*
+
     let reviewsRef = db.ref(`/vendors/${vendorID}/numOfReviews`);
     //this sets name to name
     reviewsRef.once("value").then(snapshot => {
@@ -201,26 +206,17 @@ export default class Home extends Component {
       }
     });
 
-    let starsRef = db.ref(`/vendors/${vendorID}/numOfStars`);
+    let allReviewsRef = db.ref(`/reviews`).orderByChild("vendorID").equalTo(vendorID);
     //this sets name to name
-    starsRef.once("value").then(snapshot => {
-      //console.log(snapshot.val());
-      if(snapshot.val()!==null&&snapshot.val()!=="null"){
-        this.setState({
+    allReviewsRef.once("value").then(snapshot => {
+      this.setState({
         //.replace removes special characters like " " or '
-          numOfStars: snapshot.val()
-        });
-        this.setState({
-          ratingNum: this.state.numOfStars/this.state.numOfReviews
-        });
-        //console.log(this.state.ratingNum);
-      }
+        reviewList: snapshot.val()
+        
+      });
     });
-*/
-    }
 
-    /*
-  */
+    }
 
   render() {
     const {name} = this.state
@@ -232,17 +228,32 @@ export default class Home extends Component {
     const {phone} = this.state
     const {vendorLat} = this.state
     const {vendorLong} = this.state
-    /*const {numOfReviews} = this.state
-    const {numOfStars} = this.state
+    const {numOfReviews} = this.state
+    /*const {numOfStars} = this.state
     const {ratingNum} = this.state*/
     const { currentUser } = this.state;
+    const {reviewList} = this.state;
+    var newReviewList = [];
+    Object.keys(reviewList).forEach(function(key){
+        if(reviewList[key].description!== null&&reviewList[key].rating!== null&&reviewList[key].title!== null&&reviewList[key].userID!== null&&
+          reviewList[key].vendorID!== null&&reviewList[key].date!== null&&reviewList[key].description!== undefined&&reviewList[key].rating!== undefined&&reviewList[key].title!== undefined&&
+          reviewList[key].userID!== undefined&&reviewList[key].vendorID!== undefined&&reviewList[key].date!== undefined)
+        {
+            var tempObj = {
+              id:           key,
+              description:  reviewList[key].description,
+              rating:       reviewList[key].rating,
+              title:        reviewList[key].title,
+              userID:       reviewList[key].userID,
+              vendorID:     reviewList[key].vendorID,
+              date:         reviewList[key].date
+            };
+            newReviewList.push(tempObj);
+        }
+      console.log(newReviewList);
+    })
     return (
-      //SearchBar
-      //Map
-      //FoodIconSlider
-      //ShopTables
-      
-      //add hamburger menu to page, used to style
+
       <View style={styles.container2}>
        
 		  <View style = {styles.menuOptionsStyle}>
@@ -253,19 +264,9 @@ export default class Home extends Component {
           }}
           onMapReady={() => {
             this._gotoVendorsLocation();
-            /*
-            if (
-              this.state.moveToUserLocation &&
-              this.props.userLocation.data.coords &&
-              this.props.userLocation.data.coords.latitude
-            ) {
-              this._gotoVendorsLocation();
-              this.state.moveToUserLocation = false;
-            }*/
           }}
           showsCompass={true}
           compassStyle={styles.compassPosition}
-          //showsUserLocation
           onRegionChangeComplete={region => {}}
           style={{ flex: 1 }}
           region={this.props.coordinate}
@@ -316,7 +317,7 @@ export default class Home extends Component {
         {/* - - - SLIDING PANEL - - - */}
         <SlidingPanel
           allowDragging = {false}
-          headerLayoutHeight = {200}
+          headerLayoutHeight = {180}
           headerLayout = {() =>
           <View style={styles.slidingPanelLayout3Style}> 
                 <Text style={styles.bigBoldRedFont}>
@@ -329,75 +330,143 @@ export default class Home extends Component {
                   type = 'star'
                   imageSize={40}
                 />
+                <Text style={styles.reviewFont}>
+                    {numOfReviews} Reviews
+                </Text>
           </View>
           }
          
           slidingPanelLayout = {() =>
-            <View style={styles.slidingPanelLayout2Style}> 
-                <Form style={{backgroundColor: "#FFF", flex: 2}}>
-                <View>
+            <View style={styles.viewVendorPanel}> 
+              <Collapse>
+                <CollapseHeader style={{ 
+                        backgroundColor: 'rgba(229, 149, 149, .8)'
+                      }}>
+                  <Text style={{ 
+                        paddingTop: 10,
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        textAlign: 'center',
+                        color: 'white',
+                        paddingBottom: 10,
+                        //paddingTop: 10
+                      }}>
+                          Vendor Info
+                  </Text>
+                </CollapseHeader>
+                <CollapseBody>
+                    <View style ={styles.formView}>
+                      <Form style={{backgroundColor: "#FFF", flex: 2}}>
+                      <FormLabel>Type Of Vendor</FormLabel>
+                      <FormInput 
+                          placeholder = {type}
+                          editable={false}
+                      />
 
-                <FormLabel>Type Of Vendor</FormLabel>
-                <FormInput 
-                    placeholder = {type}
-                    editable={false}
-                />
+                      <FormLabel>Days Of Operation</FormLabel>
+                      <FormInput 
+                          placeholder = {daysOfOp}
+                          //disabled = {true}
+                          editable={false}
+                      />
 
-                <FormLabel>Days Of Operation</FormLabel>
-                <FormInput 
-                    placeholder = {daysOfOp}
-                    //disabled = {true}
-                    editable={false}
-                />
+                      <FormLabel>Hours Of Operation</FormLabel>
+                      <FormInput 
+                          placeholder = {hours}
+                          editable={false}
+                          //disabled = {true}
+                          />
 
-                <FormLabel>Hours Of Operation</FormLabel>
-                <FormInput 
-                    placeholder = {hours}
-                    editable={false}
-                    //disabled = {true}
+                      <FormLabel>City</FormLabel>
+                      <FormInput
+                      placeholder = {city}
+                      editable={false}
+                      //disabled = {true}
+                      />
+
+                      <FormLabel>Phone</FormLabel>
+                      <FormInput 
+                          placeholder = {phone}
+                          editable={false}
+                          //disabled = {true}
+                          />
+                      </Form>
+                    </View>
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{ 
+                        //paddingTop: 10,
+                        backgroundColor: 'rgba(229, 169, 169, .8)',
+                        //paddingTop: 10 rgb(255, 109, 127)
+                      }}>
+                  <Text style={{ 
+                        //paddingTop: 10,
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        textAlign: 'center',
+                        color: 'white',
+                        paddingBottom: 10,
+                        paddingTop: 10
+                      }}>
+                          Reviews
+                  </Text>
+                </CollapseHeader>
+                <CollapseBody>
+                    <View style={styles.listReviewView}>
+                      
+                      <ScrollView>
+                      {
+                      newReviewList.map((l, i) => (
+                        <ListItem
+                          key={i}
+                          title={
+                            <Text style={styles.titleText}>{l.title}</Text>
+                          }
+                          subtitle={
+                           <View style={styles.subtitleView}>
+                                <View style={styles.reviewDate}>
+                                <Rating 
+                                  startingValue = {l.rating}
+                                  readonly = {true}
+                                  type = 'star'
+                                  imageSize={20}
+                                />
+                                <Text style={styles.reviewHomeFont}>  {l.date}</Text>
+                                </View>
+                                <Text style={styles.reviewHomeFont}>{l.description}</Text>
+                            </View>
+                          }
+                          chevronColor="white"
+                        >
+                        
+                        </ListItem>
+                      ))
+                    }
+                    </ScrollView>
+                    <GradientButton
+                      style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
+                      text="Add Review"
+                      textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+                      gradientBegin="#FFF"
+                      gradientEnd="#FFF"           
+                      gradientDirection="diagonal"
+                      height={50}
+                      width={150}
+                      radius={50}             
+                      onPressAction={() =>
+                          this.props.navigation.navigate("CreateReview")
+                      }
                     />
+                    </View>
+                </CollapseBody>
+              </Collapse>
 
-                <FormLabel>City</FormLabel>
-                <FormInput
-                placeholder = {city}
-                editable={false}
-                //disabled = {true}
-                />
-
-                <FormLabel>Phone</FormLabel>
-                <FormInput 
-                    placeholder = {phone}
-                    editable={false}
-                    //disabled = {true}
-                    />
-                </View>
-                </Form>
-
-          <View style ={styles.buttonContainer}>
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
-            text="Add Review"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={150}
-            radius={50}             
-            onPressAction={() =>
-                this.props.navigation.navigate("CreateReview")
-            }
-          />
           </View>
-          </View>
-          
           } 
-         
         />
-        
 		  </View>
       </View>
-    );
-        
+    );     
   }
 };
