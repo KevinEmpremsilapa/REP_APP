@@ -21,10 +21,10 @@ import UserEditProfile from './Screens/UserScreens/UserEditProfile';
 import VendorProfile from './Screens/VendorScreens/VendorProfile';
 import VendorEditProfile from './Screens/VendorScreens/VendorEditProfile';
 import VendorUser from './Screens/VendorUser';
+import ViewVendorProfile from './Screens/UserScreens/ViewVendorProfile';
 
 const repRed = '#FF6D6F';
 const repGray = '363636';
-
 
 export default class App extends React.Component{
     render(){
@@ -33,33 +33,47 @@ export default class App extends React.Component{
         );
      }
 }
+function getScreens(item)
+{
+    //Main.isVendor
+    if(isVendor === false && (item.key ==='Logout' || item.key ==='User Home' || item.key === 'User Profile'))
+        return true;
+    else if(isVendor === true && (item.key ==='Logout' || item.key ==='Vendor Home' || item.key === 'Vendor Profile'))
+        return true;
+    else
+        return false;
 
-const CustomDrawerComponent = (props) => ( 
+}
+const CustomDrawerComponent = ({items, ...props}) => ( 
     //customize the hamburger here
+    
     <SafeAreaView style = {{flex:1}}>
         <View style = {styles.safeAreaStyle}>
             <Image source = {defaultUserIcon} style={styles.userIconImage}/>
         </View>
 
         <ScrollView >
-            <DrawerItems style={styles.contentOptions} {...props}/>
+            <DrawerItems style={styles.contentOptions}
+            items = {items.filter(item =>getScreens(item))}
+            {...props}/>
         </ScrollView>
     </SafeAreaView>
 )
 
 const Stack = {
-    MainScreen: {screen: Main},
-    HomeScreen: {screen: HomeScreen},
-    SignupScreen: {screen: Signup},
-    UserProfile: {screen: UserProfile},
-    UserEditProfile: {screen: UserEditProfile},
-    HomeScreenVendor: {screen: HomeScreenVendor},
-    SignupVendor: {screen: SignupVendor},
-    VendorProfile: {screen: VendorProfile},
-    VendorEditProfile: {screen: VendorEditProfile},
-    VendorUser: {screen: VendorUser},
+    MainScreen:         {screen: Main,              navigationOptions: {header: null, gesturesEnabled: false}},
+    HomeScreen:         {screen: HomeScreen,        navigationOptions: {header: null, gesturesEnabled: false}},
+    SignupScreen:       {screen: Signup,            navigationOptions: {header: null, gesturesEnabled: false}},
+    UserProfile:        {screen: UserProfile,       navigationOptions: {header: null, gesturesEnabled: false}},
+    UserEditProfile:    {screen: UserEditProfile,   navigationOptions: {header: null, gesturesEnabled: false}},
+    HomeScreenVendor:   {screen: HomeScreenVendor,  navigationOptions: {header: null, gesturesEnabled: false}},
+    SignupVendor:       {screen: SignupVendor,      navigationOptions: {header: null, gesturesEnabled: false}},
+    VendorProfile:      {screen: VendorProfile,     navigationOptions: {header: null, gesturesEnabled: false}},
+    VendorEditProfile:  {screen: VendorEditProfile, navigationOptions: {header: null, gesturesEnabled: false}},
+    VendorUser:         {screen: VendorUser,        navigationOptions: {header: null, gesturesEnabled: false}},
+    ViewVendorProfile:  {screen: ViewVendorProfile, navigationOptions: {header: null, gesturesEnabled: false}},
 };
-
+ 
 
 const drawerRoutes = {
     'Logout': {
@@ -67,6 +81,7 @@ const drawerRoutes = {
         screen: createStackNavigator(Stack, {initialRouteName: 'MainScreen'}),
         navigationOptions:{
             drawerIcon: <Image source={logoutIcon} style={[styles.drawerIconSize, styles.logoutIconSize]} />,
+            drawerLockMode: 'locked-closed',
         },
     },
     'User Home': {
@@ -74,6 +89,7 @@ const drawerRoutes = {
         screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreen'}),
         navigationOptions:{
             drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
         },
     },
     'User Profile': {
@@ -81,6 +97,7 @@ const drawerRoutes = {
         screen: createStackNavigator(Stack, {initialRouteName: 'UserProfile'}),
         navigationOptions:{
             drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
         },
     },
     'Vendor Home': {
@@ -88,6 +105,7 @@ const drawerRoutes = {
         screen: createStackNavigator(Stack, {initialRouteName: 'HomeScreenVendor'}),
         navigationOptions:{
             drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
         },
     },
     'Vendor Profile': {
@@ -95,6 +113,7 @@ const drawerRoutes = {
         screen: createStackNavigator(Stack, {initialRouteName: 'VendorProfile'}),
         navigationOptions:{
             drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
         },
     },
     
@@ -108,9 +127,9 @@ const RootNavigator = createStackNavigator({
             {
                 contentComponent: CustomDrawerComponent,
                 // Changed "navigationOpions" to "navigationOptions"
-                navigationOptions:{
-                    drawerLockMode:'locked-closed' //should disable opening the drawer navigator by swiping right
-                 },
+                //navigationOptions:{
+                  //  drawerLockMode:'locked-closed' //should disable opening the drawer navigator by swiping right
+                 //},
                  contentOptions:{
                     activeTintColor :'#FF6D6F',
                  }
