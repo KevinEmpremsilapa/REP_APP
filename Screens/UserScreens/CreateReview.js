@@ -148,7 +148,8 @@ export default class CreateReview extends Component {
               multiline={true}
               onChangeText={description => this.setState({ description })} 
               />
-          <View style = {styles.buttonContainer}>
+      <View style = {styles.buttonContainer}>
+
       <GradientButton
         style={{ marginVertical: 5, marginTop: 15}}
         text="Submit"
