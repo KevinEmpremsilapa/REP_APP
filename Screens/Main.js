@@ -41,9 +41,11 @@ import {
   Label
 } from "native-base";
 
-export default class App extends React.Component {
+global.isVendor = false;
 
+export default class App extends React.Component {
   // Show / Hide Password
+  
   managePasswordVisibility = () =>
   {
     this.setState({ hidePassword: !this.state.hidePassword });
@@ -59,7 +61,7 @@ export default class App extends React.Component {
       password: "",
       error: "",
       loading: false,
-      hidePassword: true
+      hidePassword: true,
     };
   }
 
@@ -93,9 +95,9 @@ export default class App extends React.Component {
         
           //check if user was found
           if (this.state.name != "null" && this.state.name != null) {
-            isVendor = false;//starts using vendor ham menu
+            global.isVendor = false;//starts using vendor ham menu
             this.props.navigation.navigate("HomeScreen");
-            this.setState({ error: "", loading: false });
+            this.setState({ error: "", loading: false});
           } else {
             this.setState({
               error: "\nAre you a vendor? try signing in as vendor"
@@ -132,9 +134,9 @@ export default class App extends React.Component {
           });
 
           if (this.state.name != "null" && this.state.name != null) {
-            isVendor = true; //starts using vendor ham menu
+            global.isVendor = true; //starts using vendor ham menu
             this.props.navigation.navigate("HomeScreenVendor");
-            this.setState({ error: "", loading: false });
+            this.setState({ error: "", loading: false});
           } else {
             this.setState({
               error: "\nAre you a user? try signing in as user"
@@ -149,7 +151,6 @@ export default class App extends React.Component {
 
   // Screen View Login Page
   render() {
-    
     return (
       
        <ImageBackground source={sunsetBG} style={styles.backgroundContainer}>
