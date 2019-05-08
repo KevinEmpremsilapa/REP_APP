@@ -124,7 +124,8 @@ export default class Home extends Component {
       });
     });
 
-    let vendorRef = db.ref(`/vendors`).orderByChild("latitude").startAt(0);
+    //let vendorRef = db.ref(`/vendors`).orderByChild("latitude").startAt(0);
+    let vendorRef = db.ref(`/vendors`).orderByChild("isVendorLocationOn").equalTo(true);
     //this sets name to name
     vendorRef.once("value").then(snapshot => {
       this.setState({
