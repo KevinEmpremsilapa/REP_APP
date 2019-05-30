@@ -50,11 +50,17 @@ export default class Signup extends Component {
       hidePassword: true,
       latitude: 118,
       longitude: 34,//LA CORDINATES DEFAULT
+      numOfReviews:0,
+      numOfStars:0,
+      city:"",
+      daysOfOp:"",
+      hoursOfOp:"",
+      typeVendor:"",
       isVendorLocationOn: false,
     };
   }
 
-  signUpUser = (email, password, name, phone, company, laditude, longitude, isVendorLocationOn) => {
+  signUpUser = (email, password, name, phone, company, latitude, longitude, isVendorLocationOn) => {
     try {
       if (this.state.password.length < 6) {
         alert("Enter a password that is 6 characters or longer");
@@ -78,6 +84,12 @@ export default class Signup extends Component {
               latitude: latitude,
               longitude: longitude,
               isVendorLocationOn: isVendorLocationOn,
+              numOfReviews:0,
+              numOfStars:0,
+              city:"",
+              daysOfOp:"",
+              hoursOfOp:"",
+              typeVendor:""
             });
         });
     } catch (error) {
@@ -165,7 +177,7 @@ export default class Signup extends Component {
               this.state.name,
               this.state.phone,
               this.state.company,
-              this.state.laditude, 
+              this.state.latitude, 
               this.state.longitude,
               this.state.isVendorLocationOn,
               this.props.navigation.navigate("MainScreen")

@@ -133,7 +133,6 @@ componentDidMount() {
     const { currentUser } = firebase.auth();
       this.setState({ currentUser });
 
-  
       //get values from firebase database
       let db = firebase.database();
 
@@ -206,6 +205,7 @@ componentDidMount() {
               placeholder = "Full Name"
               onChangeText={name => this.setState({ name })} />
           </Item>
+
           <Item 
               rounded
               style={styles.formInput} >
@@ -213,6 +213,7 @@ componentDidMount() {
               placeholder = "Phone" 
               onChangeText={phone => this.setState({ phone })} />
           </Item>
+
           <Item 
             rounded
             style={styles.formInput}>

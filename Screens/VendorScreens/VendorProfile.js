@@ -159,6 +159,7 @@ export default class VendorProfile extends Component {
           <FormLabel> Name </FormLabel>
           <FormInput 
             placeholder = {name}
+            placeholderTextColor="black"
             disabled = {true}
             editable = {false}
           />
@@ -166,6 +167,7 @@ export default class VendorProfile extends Component {
           <FormLabel>Company Name</FormLabel>
           <FormInput 
             placeholder = {companyName}
+            placeholderTextColor="black"
             disabled = {true}
             editable = {false}
           />
@@ -173,6 +175,7 @@ export default class VendorProfile extends Component {
           <FormLabel>Type Of Vendor</FormLabel>
           <FormInput 
              placeholder = {Type}
+             placeholderTextColor="black"
              disabled = {true}
              editable = {false}
           />
@@ -180,6 +183,7 @@ export default class VendorProfile extends Component {
           <FormLabel>Days Of Operation</FormLabel>
           <FormInput 
             placeholder = {daysOfOp}
+            placeholderTextColor="black"
             disabled = {true}
             editable = {false}
           />
@@ -187,6 +191,7 @@ export default class VendorProfile extends Component {
           <FormLabel>Hours Of Operation</FormLabel>
           <FormInput 
             placeholder = {hours}
+            placeholderTextColor="black"
             disabled = {true}
             editable = {false}
             />
@@ -194,6 +199,7 @@ export default class VendorProfile extends Component {
           <FormLabel>City</FormLabel>
           <FormInput
            placeholder = {city}
+           placeholderTextColor="black"
            disabled = {true}
            editable = {false}
            />
@@ -201,6 +207,7 @@ export default class VendorProfile extends Component {
           <FormLabel>Phone</FormLabel>
           <FormInput 
             placeholder = {phone}
+            placeholderTextColor="black"
             disabled = {true}
             editable = {false}
             />
