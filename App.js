@@ -9,6 +9,8 @@ import { Icon, StyleSheet, Text, View, Button,SafeAreaView, ScrollView, Dimensio
 import defaultUserIcon from './assets/Images/defaultUserIcon.png';
 import homeIcon from './assets/Images/homeIconGray.png';
 import logoutIcon from './assets/Images/logoutIcon.png';
+import userIcon from './assets/Images/UserIconGray.png';
+import starIcon from './assets/Images/StarIconGray.png';
 
 import Main from './Screens/Main';
 import HomeScreen from './Screens/UserScreens/HomeScreen';
@@ -22,6 +24,9 @@ import VendorProfile from './Screens/VendorScreens/VendorProfile';
 import VendorEditProfile from './Screens/VendorScreens/VendorEditProfile';
 import VendorUser from './Screens/VendorUser';
 import ViewVendorProfile from './Screens/UserScreens/ViewVendorProfile';
+import CreateReview from './Screens/UserScreens/CreateReview';
+import UserReviews from './Screens/UserScreens/UserReviews';
+import VendorReviews from './Screens/VendorScreens/VendorReviews';
 
 const repRed = '#FF6D6F';
 const repGray = '363636';
@@ -33,17 +38,19 @@ export default class App extends React.Component{
         );
      }
 }
+
 function getScreens(item)
 {
     //Main.isVendor
-    if(isVendor === false && (item.key ==='Logout' || item.key ==='User Home' || item.key === 'User Profile'))
+    if(isVendor === false && (item.key ==='Logout' || item.key ==='User Home' || item.key === 'User Profile' || item.key === 'User Reviews'))
         return true;
-    else if(isVendor === true && (item.key ==='Logout' || item.key ==='Vendor Home' || item.key === 'Vendor Profile'))
+    else if(isVendor === true && (item.key ==='Logout' || item.key ==='Vendor Home' || item.key === 'Vendor Profile' || item.key === 'Vendor Reviews'))
         return true;
     else
         return false;
 
 }
+
 const CustomDrawerComponent = ({items, ...props}) => ( 
     //customize the hamburger here
     
@@ -72,8 +79,12 @@ const Stack = {
     VendorEditProfile:  {screen: VendorEditProfile, navigationOptions: {header: null, gesturesEnabled: false}},
     VendorUser:         {screen: VendorUser,        navigationOptions: {header: null, gesturesEnabled: false}},
     ViewVendorProfile:  {screen: ViewVendorProfile, navigationOptions: {header: null, gesturesEnabled: false}},
+    CreateReview:       {screen: CreateReview,      navigationOptions: {header: null, gesturesEnabled: false}},
+    VendorReviews:      {screen: VendorReviews,     navigationOptions: {header: null, gesturesEnabled: false}},
+    UserReviews:        {screen: UserReviews,       navigationOptions: {header: null, gesturesEnabled: true}},
 };
  
+
 const drawerRoutes = {
     'Logout': {
         name: 'Logout',
@@ -95,7 +106,15 @@ const drawerRoutes = {
         name: 'User Profile',
         screen: createStackNavigator(Stack, {initialRouteName: 'UserProfile'}),
         navigationOptions:{
-            drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerIcon: <Image source={userIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
+        },
+    },
+    'User Reviews': {
+        name: 'User Reviews',
+        screen: createStackNavigator(Stack, {initialRouteName: 'UserReviews'}),
+        navigationOptions:{
+            drawerIcon: <Image source={starIcon} style={styles.drawerIconSize}/>,
             drawerLockMode: 'locked-closed',
         },
     },
@@ -111,7 +130,15 @@ const drawerRoutes = {
         name: 'Vendor Profile',
         screen: createStackNavigator(Stack, {initialRouteName: 'VendorProfile'}),
         navigationOptions:{
-            drawerIcon: <Image source={homeIcon} style={styles.drawerIconSize}/>,
+            drawerIcon: <Image source={userIcon} style={styles.drawerIconSize}/>,
+            drawerLockMode: 'locked-closed',
+        },
+    },
+    'Vendor Reviews': {
+        name: 'Vendor Reviews',
+        screen: createStackNavigator(Stack, {initialRouteName: 'VendorReviews'}),
+        navigationOptions:{
+            drawerIcon: <Image source={starIcon} style={styles.drawerIconSize}/>,
             drawerLockMode: 'locked-closed',
         },
     },
