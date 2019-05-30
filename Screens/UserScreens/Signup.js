@@ -156,7 +156,8 @@ export default class Signup extends Component {
               this.state.phone,
               this.state.gender,
               this.state.age,
-              this.state.bio
+              this.state.bio,
+              this.props.navigation.navigate("MainScreen")
             )}
           />
           </View>

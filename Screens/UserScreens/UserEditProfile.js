@@ -34,6 +34,7 @@ export default class UserEditProfile extends Component {
     title: "Edit Profile"
   };
 
+ 
   constructor(props) {
     super(props);
     this.state = {
@@ -45,6 +46,7 @@ export default class UserEditProfile extends Component {
       bio: "",
     };
   }
+
 
   componentDidMount() {
 
@@ -128,24 +130,15 @@ export default class UserEditProfile extends Component {
 
     //get values from firebase database
     let db = firebase.database();
-    let ref = db.ref(`/users/${currentUser.uid}/`);
+    
+    db.ref(`/users/${currentUser.uid}`).update({email: email});
+    db.ref(`/users/${currentUser.uid}`).update({name: name});
+    db.ref(`/users/${currentUser.uid}`).update({phone: phone});
+    db.ref(`/users/${currentUser.uid}`).update({gender: gender});
+    db.ref(`/users/${currentUser.uid}`).update({age: age});
+    db.ref(`/users/${currentUser.uid}`).update({bio: bio});
 
-   try {
- 
-       //Update email name and phone in firebase
-       ref.set({
-           email: email,
-           name: name,
-           phone: phone,
-           gender: gender,
-           age: age,
-           bio: bio
-         });
-
-    } catch (error) {
-   console.log(error.toString());
-    }
-   };
+  };
 
   render() {
 

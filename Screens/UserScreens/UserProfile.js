@@ -146,6 +146,7 @@ export default class UserProfile extends Component {
           <FormLabel>Name</FormLabel>
           <FormInput
           placeholder = {name}
+          placeholderTextColor="black"
           disabled = {true}
           editable = {false}
           />
@@ -153,6 +154,7 @@ export default class UserProfile extends Component {
           <FormLabel>Phone</FormLabel>
           <FormInput
           placeholder = {phone}
+          placeholderTextColor="black"
           disabled = {true}
           editable = {false}
           />
@@ -160,6 +162,7 @@ export default class UserProfile extends Component {
           <FormLabel>Gender</FormLabel>
           <FormInput
           placeholder = {gender}
+          placeholderTextColor="black"
           disabled = {true}
           editable = {false}
           />
@@ -167,6 +170,7 @@ export default class UserProfile extends Component {
           <FormLabel>Age</FormLabel>
           <FormInput
           placeholder = {age}
+          placeholderTextColor="black"
           disabled = {true}
           editable = {false}
           />
@@ -174,6 +178,7 @@ export default class UserProfile extends Component {
           <FormLabel>Bio</FormLabel>
           <FormInput
           placeholder = {bio}
+          placeholderTextColor="black"
           disabled = {true}
           editable = {false}
           />

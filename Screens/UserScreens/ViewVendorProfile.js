@@ -4,6 +4,7 @@ JS Changes
   - Search bar reads input
 */
 import React, { Component } from "react";
+//import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import Search from 'react-native-search-box';
 import MapView from "react-native-maps";
 import {
@@ -17,25 +18,25 @@ import {
   StyleSheet,
   Asyncstorage,
   ImageBackground,
-  SectionList
+  SectionList,
+  ScrollView
  } from "react-native";
-import {Header, Left, Right, Icon,Form,} from 'native-base';
+import {Thumbnail, List, Separator,Header, Left, Right, Icon,Form,} from 'native-base';
 import styles from "../Styles";
 import * as firebase from "firebase";
 import SlidingPanel from "react-native-sliding-up-down-panels";
-import {SearchBar, ListItem,FormLabel, FormInput, FormValidationMessage} from "react-native-elements";
+import {Rating, SearchBar, ListItem,FormLabel, FormInput, FormValidationMessage} from "react-native-elements";
 import GradientButton from 'react-native-gradient-buttons';
 const win = Dimensions.get("window");
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 // Images
-import homeIcon from '../../assets/Images/homeIconGray.png';
+import homeIcon from '../../assets/Images/HomeIconRed_Trans80.png';
 import notFocusLocationIcon from '../../assets/Images/NotCurrentLocationIcon_Opacity80.png';
 import focusLocationIcon from '../../assets/Images/CurrentLocationIcon_Opacity80.png';
 import hamburgerMenuIcon from '../../assets/Images/HamburgerMenuIcon.png';
 import popsicleIcon from '../../assets/Images/popsicleLocator.png';
+import {Collapse,CollapseHeader, CollapseBody, AccordionList} from 'accordion-collapse-react-native';
 
-global.vendorID = "w5IDMgq00pYaaGWucHnCBkx8zUy1";
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -48,15 +49,20 @@ export default class Home extends Component {
         city: " ",
         phone: " ",
         email: " ",
-        vendorLat: 34.23041,
-        vendorLong: -118.39283
+        vendorLat: 34.230,
+        vendorLong: -118.392,
+        numOfReviews: 0,
+        numOfStars: 0,
+        ratingNum:0,
+        reviewList: {},
+        page:'first'
     };
     this._isMounted = false;
   }
-
+  
   state = { currentUser: null };
-
   state = { moveToUserLocation: true };
+
   _gotoCurrentLocation(e) {
     this.map.animateToRegion({
       latitude: this.state.latitude,
@@ -65,16 +71,17 @@ export default class Home extends Component {
       longitudeDelta: 0.005845874547958374
     });
   }
-  _gotoVendorsLocation(e) {
+  _gotoVendorsLocation(lat,long) {
     this.map.animateToRegion({
-      latitude: this.state.vendorLat,
-      longitude: this.state.vendorLong,
+      latitude: lat,
+      longitude: long,
       latitudeDelta: 0.0059397161733585335,
       longitudeDelta: 0.005845874547958374
     });
   }
 
   componentDidMount() {
+    console.log("passed rating"+ratingValue);
     this._isMounted =true;
     navigator.geolocation.getCurrentPosition(position => {
       var lat = parseFloat(position.coords.latitude);
@@ -138,7 +145,7 @@ export default class Home extends Component {
     daysRef.once("value").then(snapshot => {
     this.setState({
         //.replace removes special characters like " " or '
-        daysOfOp: JSON.stringify(snapshot.val())
+        daysOfOp: (snapshot.val())
     });
     });
 
@@ -148,7 +155,7 @@ export default class Home extends Component {
     hoursRef.once("value").then(snapshot => {
     this.setState({
         //.replace removes special characters like " " or '
-        hours: JSON.stringify(snapshot.val())
+        hours: (snapshot.val())
     });
     });
 
@@ -163,28 +170,64 @@ export default class Home extends Component {
     });
 
     //get latitude
-    let latRef = db.ref(`/vendors/${vendorID}/location/vendorLatitude`);
+    let latRef = db.ref(`/vendors/${vendorID}/latitude`);
     //this sets name to name
     latRef.once("value").then(snapshot => {
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
         this.setState({
         //.replace removes special characters like " " or '
         vendorLat: snapshot.val()
         });
+      }
     });
 
     //get longitude
-    let longRef = db.ref(`/vendors/${vendorID}/location/vendorLongitude`);
+    let longRef = db.ref(`/vendors/${vendorID}/longitude`);
     //this sets name to name
     longRef.once("value").then(snapshot => {
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
         this.setState({
         //.replace removes special characters like " " or '
         vendorLong: snapshot.val()
         });
+      }
     });
-    }
 
-    /*
-  */
+    let reviewsRef = db.ref(`/vendors/${vendorID}/numOfReviews`);
+    //this sets name to name
+    reviewsRef.once("value").then(snapshot => {
+      //console.log(snapshot.val());
+      if(snapshot.val()!==null&&snapshot.val()!=="null"){
+        this.setState({
+        //.replace removes special characters like " " or '
+        numOfReviews: snapshot.val()
+        });
+      }
+    });
+
+    let allReviewsRef = db.ref(`/reviews`).orderByChild("vendorID").equalTo(vendorID);
+    //this sets name to name
+    allReviewsRef.once("value").then(snapshot => {
+      if(snapshot.val()!==null){
+      this.setState({
+        //.replace removes special characters like " " or '
+        reviewList: snapshot.val()
+      });}
+      else{
+        this.setState({
+          //.replace removes special characters like " " or '
+          reviewList: {
+            "date":"",
+            "description":"",
+            "id":"",
+            "rating":0,
+            "title":""
+          }
+        });
+      }
+    });
+
+    }
 
   render() {
     const {name} = this.state
@@ -196,46 +239,53 @@ export default class Home extends Component {
     const {phone} = this.state
     const {vendorLat} = this.state
     const {vendorLong} = this.state
-    
+    const {numOfReviews} = this.state
+    /*const {numOfStars} = this.state
+    const {ratingNum} = this.state*/
     const { currentUser } = this.state;
-
+    const {reviewList} = this.state;
+    var newReviewList = [];
+    Object.keys(reviewList).forEach(function(key){
+        if(reviewList[key].description!== null&&reviewList[key].rating!== null&&reviewList[key].title!== null&&reviewList[key].userID!== null&&
+          reviewList[key].vendorID!== null&&reviewList[key].date!== null&&reviewList[key].description!== undefined&&reviewList[key].rating!== undefined&&reviewList[key].title!== undefined&&
+          reviewList[key].userID!== undefined&&reviewList[key].vendorID!== undefined&&reviewList[key].date!== undefined)
+        {
+            var tempObj = {
+              id:           key,
+              description:  reviewList[key].description,
+              rating:       reviewList[key].rating,
+              title:        reviewList[key].title,
+              userID:       reviewList[key].userID,
+              vendorID:     reviewList[key].vendorID,
+              date:         reviewList[key].date
+            };
+            newReviewList.push(tempObj);
+        }
+      console.log(newReviewList);
+    })
     return (
-      //SearchBar
-      //Map
-      //FoodIconSlider
-      //ShopTables
-      
-      //add hamburger menu to page, used to style
+
       <View style={styles.container2}>
        
-		  <View style = {styles.menuOptionsStyle}>
+      <View style = {styles.menuOptionsStyle}>
     
         <MapView
           ref={ref => {
             this.map = ref;
           }}
-          onMapReady={() => {
-            this._gotoVendorsLocation();
-            /*
-            if (
-              this.state.moveToUserLocation &&
-              this.props.userLocation.data.coords &&
-              this.props.userLocation.data.coords.latitude
-            ) {
-              this._gotoVendorsLocation();
-              this.state.moveToUserLocation = false;
-            }*/
-          }}
+         
           showsCompass={true}
           compassStyle={styles.compassPosition}
-          //showsUserLocation
           onRegionChangeComplete={region => {}}
           style={{ flex: 1 }}
           region={this.props.coordinate}
           showsUserLocation={true}
+          onMapReady={() => {
+            this._gotoVendorsLocation(vendorLat,vendorLong);
+          }}
         >
-         {/*Drop markers on map*/
-        console.log(vendorLat)}
+      
+         {/*Drop markers on map*/}
          {
               <MapView.Marker
                   coordinate={{
@@ -253,100 +303,19 @@ export default class Home extends Component {
         </MapView>
         
         {/* - - - ICONS: Hamburger, GoToLocation - - - */}
-           {/* - - - TOP NAVIGATION BAR - - - */}
-           <View style={styles.mapTopNavBar}>
-            
-            {/* - - - HAMBURGER MENU - - - */}
-            <TouchableOpacity
-              style={styles.hamburgerIconPosition}
-              name="md-menu"
-              onPress={() => this.props.navigation.openDrawer()}
-            >
-              <Image source={hamburgerMenuIcon} style={styles.mapIconStyle} />
-            </TouchableOpacity>
-
-            {/* - - - SEARCH BAR - - - */}
-            <GooglePlacesAutocomplete
-              placeholder="Search"
-              minLength={2} // minimum length of text to search
-              autoFocus={false}
-              returnKeyType={"search"} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-              listViewDisplayed="auto" // true/false/undefined
-              fetchDetails={true}
-              renderDescription={row => row.description} // custom description render
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                console.log(data, details);
-              }}
-              getDefaultValue={() => ""}
-              query={{
-                // available options: https://developers.google.com/places/web-service/autocomplete
-                key: "AIzaSyDMi41MlaJhmn2WG8LjG5DRlUdESHxoC9U",
-                language: "en", // language of the results
-                types: "" // default: 'geocode' (cities) - Putting nothing will search for everything
-              }}
-
-              styles={{
-                textInputContainer: {
-                  height: "100%",
-                  width: 280,
-                  backgroundColor: 'rgba(0,0,0, 0)',
-                  borderTopWidth: 0,
-                  borderBottomWidth:0,
-                },
-                textInput: {
-                  width: '100%',
-                  height: '100%',
-                  height: 40,
-                  width: 280,
-                  color: '#5d5d5d',
-                  fontSize: 16,
-                },
-                description: {
-                  fontWeight: "bold"
-                },
-                predefinedPlacesDescription: {
-                  color: "#1faadb"
-                },
-                listView: {
-                  top: 40,
-                  position: 'absolute',
-                  width: 270,
-                  backgroundColor: 'white',
-                  marginBottom: 10,
-                },
-                row: {
-                backgroundColor: 'white'
-                },
-              }}
-              //currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
-              //currentLocationLabel="Current location"
-              nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-              GoogleReverseGeocodingQuery={
-                {
-                  // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-                }
-              }
-              GooglePlacesSearchQuery={{
-                // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                rankby: "distance",
-                types: "food"
-              }}
-              filterReverseGeocodingByTypes={[
-                "locality",
-                "administrative_area_level_3"
-              ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-              //predefinedPlaces={[homePlace, workPlace]}
-              debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-              //renderLeftButton={()  => <Image source={require('path/custom/left-icon')} />}
-              //renderRightButton={() => ()}
-              />
-
+        
+            <View style={styles.hamburgerIconPosition}>
+              <TouchableOpacity
+                onPress={()=> this.props.navigation.navigate("HomeScreen")}
+              >
+                <Image 
+                  source={homeIcon}
+                  style={styles.mapIconStyle}
+                  />
+              </TouchableOpacity>
           </View>
-        {/* - - - END TOP NAVIGATION BAR - - - */}
-            
 
-          <View style={styles.locationIconPosition}>
+          <View style={{ position: 'absolute', right: 10, bottom: 200}}>
               <TouchableOpacity
                 onPress={() => this._gotoCurrentLocation()}
               >
@@ -361,80 +330,158 @@ export default class Home extends Component {
         {/* - - - SLIDING PANEL - - - */}
         <SlidingPanel
           allowDragging = {false}
-          headerLayoutHeight = {200}
+          headerLayoutHeight = {180}
           headerLayout = {() =>
           <View style={styles.slidingPanelLayout3Style}> 
                 <Text style={styles.bigBoldRedFont}>
                     {company}
                 </Text>
+                <Rating style = {styles.ratings}
+            
+                  startingValue = {ratingValue}
+                  readonly = {true}
+                  type = 'star'
+                  imageSize={40}
+                />
+                <Text style={styles.reviewFont}>
+                    {numOfReviews} Reviews
+                </Text>
           </View>
           }
          
           slidingPanelLayout = {() =>
-            <View style={styles.slidingPanelLayout2Style}> 
-                <Form style={{backgroundColor: "#FFF", flex: 2}}>
-                <View>
+            <View style={styles.viewVendorPanel}> 
+              <Collapse>
+                <CollapseHeader style={{ 
+                        backgroundColor: 'rgba(229, 149, 149, .8)'
+                      }}>
+                  <Text style={{ 
+                        paddingTop: 10,
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        textAlign: 'center',
+                        color: 'white',
+                        paddingBottom: 10,
+                        //paddingTop: 10
+                      }}>
+                          Vendor Info
+                  </Text>
+                </CollapseHeader>
+                <CollapseBody>
+                    <View style ={styles.formView}>
+                      <Form style={{backgroundColor: "#FFF", flex: 2}}>
+                      <FormLabel>Type Of Vendor</FormLabel>
+                      <FormInput 
+                          placeholder = {type}
+                          editable={false}
+                      />
 
-                <FormLabel>Type Of Vendor</FormLabel>
-                <FormInput 
-                    placeholder = {type}
-                    editable={false}
-                />
+                      <FormLabel>Days Of Operation</FormLabel>
+                      <FormInput 
+                          placeholder = {daysOfOp}
+                          //disabled = {true}
+                          editable={false}
+                      />
 
-                <FormLabel>Days Of Operation</FormLabel>
-                <FormInput 
-                    placeholder = {daysOfOp}
-                    //disabled = {true}
-                    editable={false}
-                />
+                      <FormLabel>Hours Of Operation</FormLabel>
+                      <FormInput 
+                          placeholder = {hours}
+                          editable={false}
+                          //disabled = {true}
+                          />
 
-                <FormLabel>Hours Of Operation</FormLabel>
-                <FormInput 
-                    placeholder = {hours}
-                    editable={false}
-                    //disabled = {true}
+                      <FormLabel>City</FormLabel>
+                      <FormInput
+                      placeholder = {city}
+                      editable={false}
+                      //disabled = {true}
+                      />
+
+                      <FormLabel>Phone</FormLabel>
+                      <FormInput 
+                          placeholder = {phone}
+                          editable={false}
+                          //disabled = {true}
+                          />
+                      </Form>
+                    </View>
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{ 
+                        //paddingTop: 10,
+                        backgroundColor: 'rgba(229, 169, 169, .8)',
+                        //paddingTop: 10 rgb(255, 109, 127)
+                      }}>
+                  <Text style={{ 
+                        //paddingTop: 10,
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        textAlign: 'center',
+                        color: 'white',
+                        paddingBottom: 10,
+                        paddingTop: 10
+                      }}>
+                          Reviews
+                  </Text>
+                </CollapseHeader>
+                <CollapseBody>
+                    <View style={styles.listReviewView}>
+                      
+                      <ScrollView>
+                      {
+                      newReviewList.map((l, i) => (
+                        <ListItem
+                          key={i}
+                          title={
+                            <Text style={styles.titleText}>{l.title}</Text>
+                          }
+                          subtitle={
+                           <View style={styles.subtitleView}>
+                                <View style={styles.reviewDate}>
+                                <Rating 
+                                  startingValue = {l.rating}
+                                  readonly = {true}
+                                  type = 'star'
+                                  imageSize={20}
+                                />
+                                <Text style={styles.reviewHomeFont}>  {l.date}</Text>
+                                </View>
+                                <Text style={styles.reviewHomeFont}>{l.description}</Text>
+                            </View>
+                          }
+                          chevronColor="white"
+                        >
+                        
+                        </ListItem>
+                      ))
+                    }
+                    </ScrollView>
+                    <GradientButton
+                      style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
+                      text="Add Review"
+                      textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+                      gradientBegin="#FFF"
+                      gradientEnd="#FFF"           
+                      gradientDirection="diagonal"
+                      height={50}
+                      width={150}
+                      radius={50}             
+                      onPressAction={() =>
+                          this.props.navigation.navigate("CreateReview")
+                      }
                     />
+                    </View>
+                </CollapseBody>
+              </Collapse>
 
-                <FormLabel>City</FormLabel>
-                <FormInput
-                placeholder = {city}
-                editable={false}
-                //disabled = {true}
-                />
-
-                <FormLabel>Phone</FormLabel>
-                <FormInput 
-                    placeholder = {phone}
-                    editable={false}
-                    //disabled = {true}
-                    />
-                </View>
-                </Form>
-
-          <View style ={styles.buttonContainer}>
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center' }}
-            text="Add Review"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={150}
-            radius={50}             
-            onPressAction={() =>
-                this.props.navigation.navigate("UserEditProfile")
-            }
-          />
           </View>
-          </View>
-          
           } 
-         
         />
-        
-		  </View>
+      </View>
       </View>
-    );
+    );     
   }
 };
+
+

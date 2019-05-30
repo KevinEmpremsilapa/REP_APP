@@ -1,10 +1,12 @@
 //Sign up Vendor Screen
+//import Rater from 'react-rater'
+//import 'react-rater/lib/react-rater.css'
+
 import React, { Component } from "react";
 import GradientButton from 'react-native-gradient-buttons';
 import gradientBG from '../../assets/Images/gradientBG.png';
 import * as firebase from "firebase";
 import styles from "../Styles";
-
 import {
   View,
   Text,
@@ -15,6 +17,7 @@ import {
   ImageBackground,
   Image, 
   Platform,
+  Dimensions
 } from "react-native";
 
 import {
@@ -24,114 +27,163 @@ import {
   Form,
   Input,
   Item,
-  Label
+  Label,
+  Textarea
 } from "native-base";
-
+import {Rating} from "react-native-elements";
+var today = new Date();
+var todayDay = today.getDay().toString();
+var todayMonth = today.getMonth().toString();
+var todayYear = today.getFullYear().toString();
+if(todayDay.length <2)
+todayDay = "0"+todayDay;
+if(todayMonth.length <2)
+todayMonth = "0"+todayMonth;
+var todayFormatted = todayDay+"-"+todayMonth+"-"+todayYear;
 export default class CreateReview extends Component {
-
+  
   constructor(props) {
     super(props);
     this.state = {
       stars: 0,
       title: "",
       description: "",
-      vendorID: "",
-      userID: "",
+      //vendorID: "",
+      //userID: "",
       error: "",
       loading: false,
+      numOfStars: 0,
+      numOfReviews: 0
+     // rating: 1
     };
   }
+  //addReview = (stars, title, description, vendorID, userID) => {
+  addReview = (title, description, rating) => {
+    const { currentUser } = firebase.auth();
+    this.setState({ currentUser });
 
-  signUpUser = (stars, title, description, vendorID, userID) => {
+    let db = firebase.database();
+    //let ref = db.ref.child("reviews");
+    let vendorRef = db.ref(`/vendors/${vendorID}/`);
+    let ref = db.ref(`/reviews/`);
     try {
-      
+      //Update email name and phone in firebase
+      ref.push({
+        "title": title,
+        "description": description,
+        "rating": rating,
+        "vendorID": vendorID,
+        "userID": currentUser.uid,
+        "date": todayFormatted
+        })
+          
+      vendorRef.update({
+        "numOfReviews": this.state.numOfReviews +1,
+        "numOfStars": this.state.numOfStars +rating,
+      });
 
-      //add user and user ID
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(res => {
-          firebase
-            .database()
-            .ref("vendors/" + res.user.uid)
-            .set({
-              email: email,
-              name: name,
-              phone: phone,
-              company: company//added this
-            });
-        });
-        
-    } catch (error) {
-      console.log(error.toString());
-    }
+      this.props.navigation.navigate("ViewVendorProfile");
+
+   } catch (error) {
+  console.log(error.toString());
+   }
   };
 
-  render() {
-    return (
-      <ImageBackground source={gradientBG} style={styles.backgroundContainer}>
-        <Form>
-          <View style={styles.form}>
+  //fetchVendorInfo(){
+  componentDidMount() {
+    let db = firebase.database();
+    let numOfReviews = db.ref(`/vendors/${vendorID}/numOfReviews`);
+    //set phone number from database to the phone variable
+    numOfReviews.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        numOfReviews: snapshot.val()
+      });
+    });
+    let numOfStars = db.ref(`/vendors/${vendorID}/numOfStars`);
+    //set phone number from database to the phone variable
+    numOfStars.once("value").then(snapshot => {
+      this.setState({
+        //.replace removes special characters like " " or '
+        numOfStars: snapshot.val()
+      });
+    });
+  }
 
-          <Text style={styles.bigBoldWhiteFont}>
+  render() {
+    //this.fetchVendorInfo;
+    return (
+      /*<View style = {styles.reviewForm}>flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+    //paddingTop: 360,
+    backgroundColor: "#FFF", 
+    alignSelf: "stretch"*/
+      <View style={{backgroundColor: "#FFF", flex: 1, alignItems: 'center'}}>
+          <Text style={styles.bigBoldRedTitle}>
             Create Review
           </Text>
+          <Rating style={styles.ratings}
+                          startingValue = {0}
+                          type = 'star'
+                          startingValue = {0}
+                          imageSize={40}
+                          ratingCount={5}
+                          //minValue ={0}
+                          onFinishRating = {stars => this.setState({stars})}
+          />
 
-          <Item 
-            rounded
-            style={styles.formInput}>
-            <Input 
-              placeholder = "Full Name"
-              onChangeText={name => this.setState({ name })} />
-          </Item>
+            <TextInput 
+              style = {{width:300, height:50}}
+              placeholder = "Title"
+              onChangeText={title => this.setState({ title })}
+               />
 
-          
-          <Item 
-            rounded
-            style={styles.formInput}>
-            <Input 
-              placeholder = "Company Name"
-              onChangeText={company => this.setState({ company })} />
-          </Item>
+            <TextInput
+              //style = {{height: 50}}
+              //rowSpan={10} 
+              style = {{width:300, height:300}}
+              placeholder = "Description"
+              multiline={true}
+              onChangeText={description => this.setState({ description })} 
+              />
+      <View style = {styles.buttonContainer}>
 
-          <Item 
-            rounded
-            style={styles.formInput}>
-            <Input 
-              placeholder = "Phone"
-              onChangeText={phone => this.setState({ phone })} />
-          </Item>
+      <GradientButton
+        style={{ marginVertical: 5, marginTop: 15}}
+        text="Submit"
+        textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+        gradientBegin="#FFF"
+        gradientEnd="#FFF"           
+        gradientDirection="diagonal"
+        height={50}
+        width={260}
+        radius={50}             
+        onPressAction={() =>
+          this.addReview(
+          this.state.title,
+          this.state.description,
+          this.state.stars
+        )}
+        />
+        <GradientButton
+        style={{ marginVertical: 5, marginTop: 15}}
+        text="Cancel"
+        textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
+        gradientBegin="#FFF"
+        gradientEnd="#FFF"           
+        gradientDirection="diagonal"
+        height={50}
+        width={150}
+        radius={50}             
+        onPressAction={() =>
+           this.props.navigation.navigate("HomeScreen")
+        }
+      />
+      </View>
+      </View>
 
-          <Item 
-            rounded
-            style={styles.formInput}>        
-            <Input 
-              placeholder = "Email"
-              onChangeText={email => this.setState({ email })} />
-          </Item>
-          
-          <GradientButton
-            style={{ marginVertical: 8, marginTop: 15, alignSelf: 'center'}}
-            text="Create Vendor Account"
-            textStyle={{ fontSize: 20, color: '#FF6D6F'}}      
-            gradientBegin="#FFF"
-            gradientEnd="#FFF"           
-            gradientDirection="diagonal"
-            height={50}
-            width={260}
-            radius={50}             
-            onPressAction={() =>
-              this.signUpUser(
-              this.state.email,
-              this.state.password,
-              this.state.name,
-              this.state.phone,
-              this.state.company
-            )}
-            />
-          </View>
-        </Form>
-      </ImageBackground>
     );
   }
 }
