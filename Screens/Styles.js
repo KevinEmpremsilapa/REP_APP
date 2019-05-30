@@ -7,6 +7,109 @@ const Colors = {
 }
 
 export default StyleSheet.create({
+  //new
+  reviewDate:{
+    flex: 1,
+    flexDirection: 'row',
+  },
+  bigBoldRedTitle:{
+    paddingTop: 90,
+    paddingBottom:10,
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
+  },
+  buttonContainerReview: {
+    flex: 1,
+    flexDirection: 'row',
+    marginBottom: 36
+  },
+  viewVendorPanel: {
+    height: Dimensions.get('window').height-100,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  reviewsPanel: {
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+    flex:1
+  },
+  tabView: { 
+    width:  550, 
+    height:  500, 
+    backgroundColor:  'white' 
+  },
+  formView:
+  {
+    height: Dimensions.get('window').height-200,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white'
+  },
+  listReviewView: {   
+    height: Dimensions.get('window').height-275,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white'
+  },
+  reviewView: {
+    flexDirection: 'row',
+    height: 25,
+  },
+  reviewHomeFont:{
+    fontSize: 15,
+    color: 'gray'
+  },
+  reviewFont:{
+    fontSize: 15,
+    paddingTop: 10,
+    paddingBottom:10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
+  },
+  ratings:{
+    alignSelf: "center",
+    paddingTop: 15,
+    paddingBottom: 10
+  },
+  reviewForm:{
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "#FFF", 
+    alignSelf: "stretch"
+  },
+  subtitleView: {
+    //height: 60,
+    paddingLeft: 15,
+    paddingTop: 5
+  },
+  titleText: {
+    fontWeight: 'bold',
+    fontSize:20, 
+    paddingLeft: 15,
+    color: '#380e82'
+  },
+  distanceText: {
+    fontSize:15, 
+    color: 'black'
+  },
+  subtitleText: {
+    fontSize:15, 
+    color: 'black'
+  },
   // Sliding Drawer
   safeAreaStyle:{
     height:100,
@@ -49,6 +152,13 @@ export default StyleSheet.create({
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     backgroundColor: 'white'
+  },
+  slidingPanelLayout3Style: {
+    height: 200,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
+    alignItems:'center',
+    paddingTop:25
   },
   commonTextStyle: {
     color: 'white', 
@@ -126,13 +236,17 @@ export default StyleSheet.create({
   form:{
     flex: 1,
     justifyContent: 'flex-end',
-    paddingTop: 360,
+    paddingTop: 240,
     alignSelf: 'center'
   },
   bottom: {
     flex: 1,
     justifyContent: 'flex-end',
     marginBottom: 20
+  },
+  logoMain:{
+    alignSelf: 'center',
+    
   },
 
 
@@ -153,6 +267,18 @@ export default StyleSheet.create({
   },
   searchBarContainer:{
     backgroundColor: '#FFF',
+  },
+   bigBoldWhiteFont:{
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: '#FFF'
+  },
+  bigBoldRedFont:{
+    fontWeight: 'bold',
+    fontSize: 28,
+    textAlign: 'center',
+    color: 'rgba(255,109,111, .8)'
   },
 
   // Buttons
@@ -215,20 +341,39 @@ export default StyleSheet.create({
   },
   hamburgerIconPosition:{
     position: 'absolute',
-    paddingRight: 20,
-    top: 60,
-    right:0,
-    paddingBottom: 10,
+    left: 10,
+    top: 22,
   },
   mapIconStyle:{
-    height: 50,
-    width: 50,
+    height: 40,
+    width: 40,
   },
   locationIconPosition:{
     position: 'absolute',
-    paddingRight: 20,
-    top: 120,
-    right:0,
+    right: 10,
+    bottom: 90,
+  },
+  mapTopNavBar:{
+    position: 'absolute',
+    //alignSelf: 'center',
+    top: 20,
+    height: 50,
+    width: 300,
+    //left: 30,
+  },
+  searchBarPos:{
+    position: 'absolute',
+    alignSelf: 'center',
+    top: 14,
+    height: 50,
+    width: 350,
+    left: 50,
+  },
+  locationIconSize:{
+    flex: 1,
+    width: null,
+    height: null,
+    resizeMode: 'contain'
   },
 
   // Text Styles
@@ -244,6 +389,16 @@ export default StyleSheet.create({
   },
   p1:{
     fontSize: 12,
+  },
+
+  logo:{
+    flex: 1,
+    maxWidth: 200,
+    maxHeight: 200,
+    resizeMode: 'contain',
+    position: 'absolute',
+    alignSelf: 'center',
+    top: 8,
   },
 
 

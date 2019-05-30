@@ -39,8 +39,9 @@ export default class Signup extends Component {
         <Form>
         <View>
 
-          <Text style = {{alignSelf: 'center', fontSize: 32, color: 'white'}}> Which are you? </Text>
+          <Text style = {styles.bigBoldWhiteFont}> WHICH ARE YOU? </Text>
 
+          {/* - - - VENDOR BUTTON - - - */}
           <GradientButton
             style={{ marginTop: 15, alignSelf: 'center' }}
             text="Vendor"
@@ -56,7 +57,7 @@ export default class Signup extends Component {
             }
           />
 
-          
+          {/* - - - USER BUTTON - - - */}
           <GradientButton
             style={{ marginTop: 10, alignSelf: 'center' }}
             text="User"
@@ -71,8 +72,6 @@ export default class Signup extends Component {
                 this.props.navigation.navigate("SignupScreen")
             }
           />
-
-
         </View>
 
         </Form>
